@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import { ProjectDialog } from "@/components/projects/ProjectDialog";
 import { useToast } from "@/hooks/use-toast";
+import { EmptyStateCard } from "@/components/common/EmptyStateCard";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -73,59 +74,78 @@ const Projects = () => {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {projects.map((project) => (
-          <Card key={project.id} className="bg-gradient-card border-construction-steel/30 hover:shadow-construction transition hover-scale">
-            <CardHeader>
-              <CardTitle className="text-foreground">{project.name}</CardTitle>
-              <p className="text-construction-concrete text-sm">{project.client_name}</p>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              <div className="flex justify-between text-construction-concrete">
-                <span>Location:</span>
-                <span className="text-foreground">{project.location}</span>
-              </div>
-              <div className="flex justify-between text-construction-concrete">
-                <span>Status:</span>
-                <span className="text-construction-orange font-medium">{project.status}</span>
-              </div>
-              <div className="flex justify-between text-construction-concrete">
-                <span>Budget:</span>
-                <span className="text-foreground">${Number(project.budget).toLocaleString()}</span>
-              </div>
-              <div>
-                <div className="flex justify-between text-construction-concrete text-xs mb-1">
-                  <span>Progress</span>
-                  <span>{project.progress_percentage}%</span>
+      {projects.length === 0 ? (
+        <EmptyStateCard
+          title="No projects yet"
+          description="Create your first project to track budget, workforce, materials, documents, and progress in one place."
+          action={
+            <Button
+              onClick={() => {
+                setSelectedProject(null);
+                setDialogOpen(true);
+              }}
+              className="bg-gradient-hero hover:opacity-90 text-white"
+            >
+              <Plus className="h-5 w-5 mr-2" />
+              New Project
+            </Button>
+          }
+        />
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {projects.map((project) => (
+            <Card key={project.id} className="bg-gradient-card border-construction-steel/30 hover:shadow-construction transition hover-scale">
+              <CardHeader>
+                <CardTitle className="text-foreground">{project.name}</CardTitle>
+                <p className="text-construction-concrete text-sm">{project.client_name}</p>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm">
+                <div className="flex justify-between text-construction-concrete">
+                  <span>Location:</span>
+                  <span className="text-foreground">{project.location}</span>
                 </div>
-                <Progress value={project.progress_percentage} className="h-2" />
-              </div>
-              <div className="flex gap-2 pt-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => handleEdit(project)}
-                  className="flex-1 border-construction-steel text-construction-concrete hover:text-white"
-                >
-                  <Edit className="h-4 w-4 mr-1" />
-                  Edit
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => {
-                    setProjectToDelete(project);
-                    setDeleteDialogOpen(true);
-                  }}
-                  className="border-red-500 text-red-400 hover:bg-red-500/10"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+                <div className="flex justify-between text-construction-concrete">
+                  <span>Status:</span>
+                  <span className="text-construction-orange font-medium">{project.status}</span>
+                </div>
+                <div className="flex justify-between text-construction-concrete">
+                  <span>Budget:</span>
+                  <span className="text-foreground">${Number(project.budget).toLocaleString()}</span>
+                </div>
+                <div>
+                  <div className="flex justify-between text-construction-concrete text-xs mb-1">
+                    <span>Progress</span>
+                    <span>{project.progress_percentage}%</span>
+                  </div>
+                  <Progress value={project.progress_percentage} className="h-2" />
+                </div>
+                <div className="flex gap-2 pt-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleEdit(project)}
+                    className="flex-1 border-construction-steel text-construction-concrete hover:text-white"
+                  >
+                    <Edit className="h-4 w-4 mr-1" />
+                    Edit
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setProjectToDelete(project);
+                      setDeleteDialogOpen(true);
+                    }}
+                    className="border-red-500 text-red-400 hover:bg-red-500/10"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
 
       <ProjectDialog
         open={dialogOpen}

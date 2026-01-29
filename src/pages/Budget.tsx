@@ -6,6 +6,7 @@ import { Plus } from "lucide-react";
 import { ExpenseDialog } from "@/components/budget/ExpenseDialog";
 import { Progress } from "@/components/ui/progress";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { EmptyStateCard } from "@/components/common/EmptyStateCard";
 
 const Budget = () => {
   const [expenses, setExpenses] = useState<any[]>([]);
@@ -75,6 +76,13 @@ const Budget = () => {
           Add Expense
         </Button>
       </div>
+
+      {projectBudgets.length === 0 && (
+        <EmptyStateCard
+          title="No budget data yet"
+          description="Create a project first, then add expenses to see budget usage and monthly spend trends here."
+        />
+      )}
 
       {/* Budget Overview */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

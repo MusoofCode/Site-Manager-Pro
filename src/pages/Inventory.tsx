@@ -7,6 +7,7 @@ import { MaterialTransactionDialog } from "@/components/materials/MaterialTransa
 import { MaterialHistoryDialog } from "@/components/materials/MaterialHistoryDialog";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { EmptyStateCard } from "@/components/common/EmptyStateCard";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -82,8 +83,26 @@ const Inventory = () => {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {materials.map((material) => {
+      {materials.length === 0 ? (
+        <EmptyStateCard
+          title="No materials yet"
+          description="Add your first material to start tracking stock levels, suppliers, and costs."
+          action={
+            <Button
+              onClick={() => {
+                setSelectedMaterial(null);
+                setDialogOpen(true);
+              }}
+              className="bg-gradient-hero hover:opacity-90"
+            >
+              <Plus className="h-5 w-5 mr-2" />
+              Add Material
+            </Button>
+          }
+        />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {materials.map((material) => {
           const isLowStock = material.quantity <= material.low_stock_threshold;
           return (
             <Card key={material.id} className="bg-gradient-card border-construction-steel/30 hover-scale">
@@ -158,8 +177,9 @@ const Inventory = () => {
               </CardContent>
             </Card>
           );
-        })}
-      </div>
+          })}
+        </div>
+      )}
 
       <MaterialDialog
         open={dialogOpen}

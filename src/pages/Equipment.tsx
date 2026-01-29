@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import { EquipmentDialog } from "@/components/equipment/EquipmentDialog";
 import { useToast } from "@/hooks/use-toast";
+import { EmptyStateCard } from "@/components/common/EmptyStateCard";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -72,50 +73,69 @@ const Equipment = () => {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {equipment.map((item) => (
-          <Card key={item.id} className="bg-gradient-card border-construction-steel/30 hover-scale">
-            <CardHeader>
-              <CardTitle className="text-foreground">{item.name}</CardTitle>
-              <p className="text-construction-concrete text-sm">{item.type}</p>
-            </CardHeader>
-            <CardContent className="space-y-2 text-sm">
-              <div className="flex justify-between text-construction-concrete">
-                <span>Condition:</span>
-                <span className="text-foreground font-medium">{item.condition}</span>
-              </div>
-              <div className="flex justify-between text-construction-concrete">
-                <span>Status:</span>
-                <span className={item.available ? "text-green-400" : "text-yellow-400"}>
-                  {item.available ? "Available" : "In Use"}
-                </span>
-              </div>
-              <div className="flex gap-2 pt-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => handleEdit(item)}
-                  className="flex-1 border-construction-steel text-construction-concrete hover:text-white"
-                >
-                  <Edit className="h-4 w-4 mr-1" />
-                  Edit
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => {
-                    setEquipmentToDelete(item);
-                    setDeleteDialogOpen(true);
-                  }}
-                  className="border-red-500 text-red-400 hover:bg-red-500/10"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {equipment.length === 0 ? (
+        <EmptyStateCard
+          title="No equipment yet"
+          description="Add equipment to track availability, condition, and assignments."
+          action={
+            <Button
+              onClick={() => {
+                setSelectedEquipment(null);
+                setDialogOpen(true);
+              }}
+              className="bg-gradient-hero hover:opacity-90"
+            >
+              <Plus className="h-5 w-5 mr-2" />
+              Add Equipment
+            </Button>
+          }
+        />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {equipment.map((item) => (
+            <Card key={item.id} className="bg-gradient-card border-construction-steel/30 hover-scale">
+              <CardHeader>
+                <CardTitle className="text-foreground">{item.name}</CardTitle>
+                <p className="text-construction-concrete text-sm">{item.type}</p>
+              </CardHeader>
+              <CardContent className="space-y-2 text-sm">
+                <div className="flex justify-between text-construction-concrete">
+                  <span>Condition:</span>
+                  <span className="text-foreground font-medium">{item.condition}</span>
+                </div>
+                <div className="flex justify-between text-construction-concrete">
+                  <span>Status:</span>
+                  <span className={item.available ? "text-green-400" : "text-yellow-400"}>
+                    {item.available ? "Available" : "In Use"}
+                  </span>
+                </div>
+                <div className="flex gap-2 pt-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleEdit(item)}
+                    className="flex-1 border-construction-steel text-construction-concrete hover:text-white"
+                  >
+                    <Edit className="h-4 w-4 mr-1" />
+                    Edit
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setEquipmentToDelete(item);
+                      setDeleteDialogOpen(true);
+                    }}
+                    className="border-red-500 text-red-400 hover:bg-red-500/10"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
 
       <EquipmentDialog
         open={dialogOpen}
