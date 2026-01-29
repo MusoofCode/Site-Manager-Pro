@@ -55,7 +55,7 @@ const Projects = () => {
   };
 
   return (
-    <div className="p-8 space-y-6">
+    <div className="p-8 space-y-6 page-enter">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-4xl font-bold text-white">Projects</h1>
@@ -75,7 +75,7 @@ const Projects = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {projects.map((project) => (
-          <Card key={project.id} className="bg-gradient-card border-construction-steel/30 hover:shadow-construction transition">
+          <Card key={project.id} className="bg-gradient-card border-construction-steel/30 hover:shadow-construction transition hover-scale">
             <CardHeader>
               <CardTitle className="text-white">{project.name}</CardTitle>
               <p className="text-construction-concrete text-sm">{project.client_name}</p>

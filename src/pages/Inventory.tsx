@@ -64,7 +64,7 @@ const Inventory = () => {
   };
 
   return (
-    <div className="p-8 space-y-6">
+    <div className="p-8 space-y-6 page-enter">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-4xl font-bold text-white">Materials Inventory</h1>
@@ -86,7 +86,7 @@ const Inventory = () => {
         {materials.map((material) => {
           const isLowStock = material.quantity <= material.low_stock_threshold;
           return (
-            <Card key={material.id} className="bg-gradient-card border-construction-steel/30">
+            <Card key={material.id} className="bg-gradient-card border-construction-steel/30 hover-scale">
               <CardHeader>
                 <CardTitle className="text-white flex items-center justify-between">
                   {material.name}
