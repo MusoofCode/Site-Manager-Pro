@@ -72,9 +72,9 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="p-8 space-y-8">
+    <div className="p-8 space-y-8 page-enter">
       <div>
-        <h1 className="text-4xl font-bold text-white mb-2">Dashboard</h1>
+        <h1 className="text-4xl font-bold text-foreground mb-2">Dashboard</h1>
         <p className="text-construction-concrete">Project overview and key metrics</p>
       </div>
 
@@ -89,7 +89,7 @@ const Dashboard = () => {
               <card.icon className={`h-5 w-5 ${card.color}`} />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-white animate-fade-in">{card.value}</div>
+              <div className="text-3xl font-bold text-foreground animate-fade-in">{card.value}</div>
             </CardContent>
           </Card>
         ))}
@@ -99,7 +99,7 @@ const Dashboard = () => {
       {projectsByStatus.length > 0 && (
         <Card className="bg-gradient-card border-construction-steel/30">
           <CardHeader>
-            <CardTitle className="text-white">Projects by Status</CardTitle>
+            <CardTitle className="text-foreground">Projects by Status</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>

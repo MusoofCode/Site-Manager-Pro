@@ -5,6 +5,13 @@ import { Button } from "@/components/ui/button";
 import { NavLink } from "@/components/NavLink";
 import { useTheme } from "next-themes";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   LayoutDashboard,
   FolderKanban,
   DollarSign,
@@ -40,15 +47,16 @@ const DashboardLayout = () => {
   const [now, setNow] = useState(() => new Date());
   const navigate = useNavigate();
   const location = useLocation();
-  const { theme, setTheme } = useTheme();
+  const { theme, resolvedTheme, setTheme } = useTheme();
 
   useEffect(() => {
     const t = window.setInterval(() => setNow(new Date()), 1000);
     return () => window.clearInterval(t);
   }, []);
 
-  const themeMode = (theme ?? "dark") as "dark" | "light" | "system";
-  const isDark = themeMode === "dark";
+  const themeMode = (theme ?? "system") as "dark" | "light" | "system";
+  const effectiveTheme = (resolvedTheme ?? "dark") as "dark" | "light";
+  const isDark = effectiveTheme === "dark";
 
   const dateTimeLabel = useMemo(() => {
     const date = now.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "2-digit" });
@@ -76,7 +84,7 @@ const DashboardLayout = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-construction-dark flex w-full">
+    <div className="min-h-screen bg-construction-dark flex w-full text-foreground">
       {/* Sidebar */}
       <aside
         className={`${
@@ -84,11 +92,11 @@ const DashboardLayout = () => {
         } bg-construction-slate border-r border-construction-steel/30 transition-all duration-300 flex flex-col`}
       >
         <div className="p-4 flex items-center justify-between border-b border-construction-steel/30">
-          {sidebarOpen ? (
+            {sidebarOpen ? (
             <>
               <div className="flex items-center gap-3">
                 <img src={logo} alt="Logo" className="h-10 w-10" />
-                <span className="text-white font-bold text-lg">SOMPROPERTY</span>
+                  <span className="text-foreground font-bold text-lg">SOMPROPERTY</span>
               </div>
               <button onClick={() => setSidebarOpen(false)} className="text-construction-concrete hover:text-white">
                 <X className="h-5 w-5" />
@@ -136,7 +144,7 @@ const DashboardLayout = () => {
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-auto">
         <header className="sticky top-0 z-40 border-b border-construction-steel/30 bg-construction-slate/80 backdrop-blur supports-[backdrop-filter]:bg-construction-slate/60">
           <div className="px-6 py-3 flex items-center justify-between">
             <div className="flex items-center gap-3 min-w-0">
@@ -149,7 +157,7 @@ const DashboardLayout = () => {
                 }
               />
               <div className="min-w-0">
-                <p className="text-white font-semibold leading-tight truncate">SOMPROPERTY</p>
+                <p className="text-foreground font-semibold leading-tight truncate">SOMPROPERTY</p>
                 <p className="text-construction-concrete text-xs leading-tight truncate">
                   {location.pathname.replace("/", "").toUpperCase() || "DASHBOARD"}
                 </p>
@@ -160,15 +168,28 @@ const DashboardLayout = () => {
               <div className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-md border border-construction-steel/30 bg-construction-dark/40">
                 <Clock className="h-4 w-4 text-construction-concrete" />
                 <div className="text-xs">
-                  <span className="text-white font-medium">{dateTimeLabel.time}</span>
+                    <span className="text-foreground font-medium">{dateTimeLabel.time}</span>
                   <span className="text-construction-concrete"> • {dateTimeLabel.date}</span>
                 </div>
               </div>
 
+                <div className="hidden md:block">
+                  <Select value={themeMode} onValueChange={(v) => setTheme(v)}>
+                    <SelectTrigger className="w-[160px] bg-construction-dark border-construction-steel">
+                      <SelectValue placeholder="Theme" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-construction-slate border-construction-steel z-50">
+                      <SelectItem value="system">System</SelectItem>
+                      <SelectItem value="dark">Dark</SelectItem>
+                      <SelectItem value="light">Light</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setTheme(isDark ? "light" : "dark")}
+                  onClick={() => setTheme(isDark ? "light" : "dark")}
                 className="border-construction-steel text-construction-concrete hover:text-white hover:bg-construction-steel/20"
                 title={isDark ? "Switch to light mode" : "Switch to dark mode"}
               >

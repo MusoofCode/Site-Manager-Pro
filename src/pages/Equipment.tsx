@@ -54,10 +54,10 @@ const Equipment = () => {
   };
 
   return (
-    <div className="p-8 space-y-6">
+    <div className="p-8 space-y-6 page-enter">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-bold text-white">Equipment</h1>
+          <h1 className="text-4xl font-bold text-foreground">Equipment</h1>
           <p className="text-construction-concrete">Manage equipment and tools</p>
         </div>
         <Button
@@ -74,15 +74,15 @@ const Equipment = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {equipment.map((item) => (
-          <Card key={item.id} className="bg-gradient-card border-construction-steel/30">
+          <Card key={item.id} className="bg-gradient-card border-construction-steel/30 hover-scale">
             <CardHeader>
-              <CardTitle className="text-white">{item.name}</CardTitle>
+              <CardTitle className="text-foreground">{item.name}</CardTitle>
               <p className="text-construction-concrete text-sm">{item.type}</p>
             </CardHeader>
             <CardContent className="space-y-2 text-sm">
               <div className="flex justify-between text-construction-concrete">
                 <span>Condition:</span>
-                <span className="text-white font-medium">{item.condition}</span>
+                <span className="text-foreground font-medium">{item.condition}</span>
               </div>
               <div className="flex justify-between text-construction-concrete">
                 <span>Status:</span>

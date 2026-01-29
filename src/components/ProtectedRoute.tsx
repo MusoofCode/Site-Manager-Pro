@@ -7,34 +7,69 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
 
+  // Keep the latest session in state so we can react safely without calling Supabase inside the auth callback.
+  const [sessionUserId, setSessionUserId] = useState<string | null>(null);
+
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
+    let mounted = true;
+
+    // Subscribe FIRST (sync-only callback)
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!mounted) return;
+      setSessionUserId(session?.user?.id ?? null);
+    });
+
+    // THEN read current session
+    supabase.auth
+      .getSession()
+      .then(({ data: { session } }) => {
+        if (!mounted) return;
+        setSessionUserId(session?.user?.id ?? null);
+      })
+      .catch(() => {
+        if (!mounted) return;
+        setSessionUserId(null);
+      });
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+
+      if (!sessionUserId) {
+        setIsAdmin(false);
         setLoading(false);
         return;
       }
 
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("user_roles")
         .select("role")
-        .eq("user_id", session.user.id)
+        .eq("user_id", sessionUserId)
         .eq("role", "admin")
         .maybeSingle();
 
-      setIsAdmin(!!data);
+      if (cancelled) return;
+      if (error) {
+        setIsAdmin(false);
+      } else {
+        setIsAdmin(Boolean(data));
+      }
       setLoading(false);
+    })();
+
+    return () => {
+      cancelled = true;
     };
-
-    checkAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-      checkAuth();
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+  }, [sessionUserId]);
 
   if (loading) {
     return (

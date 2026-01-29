@@ -67,7 +67,7 @@ const Inventory = () => {
     <div className="p-8 space-y-6 page-enter">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-bold text-white">Materials Inventory</h1>
+          <h1 className="text-4xl font-bold text-foreground">Materials Inventory</h1>
           <p className="text-construction-concrete">Manage construction materials</p>
         </div>
         <Button
@@ -88,7 +88,7 @@ const Inventory = () => {
           return (
             <Card key={material.id} className="bg-gradient-card border-construction-steel/30 hover-scale">
               <CardHeader>
-                <CardTitle className="text-white flex items-center justify-between">
+                <CardTitle className="text-foreground flex items-center justify-between">
                   {material.name}
                   {isLowStock && <AlertTriangle className="h-5 w-5 text-yellow-400" />}
                 </CardTitle>
@@ -97,17 +97,17 @@ const Inventory = () => {
               <CardContent className="space-y-2 text-sm">
                 <div className="flex justify-between text-construction-concrete">
                   <span>Quantity:</span>
-                  <span className={`font-medium ${isLowStock ? "text-yellow-400" : "text-white"}`}>
+                  <span className={`font-medium ${isLowStock ? "text-yellow-400" : "text-foreground"}`}>
                     {material.quantity}
                   </span>
                 </div>
                 <div className="flex justify-between text-construction-concrete">
                   <span>Unit Cost:</span>
-                  <span className="text-white">${Number(material.unit_cost).toFixed(2)}</span>
+                  <span className="text-foreground">${Number(material.unit_cost).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-construction-concrete">
                   <span>Supplier:</span>
-                  <span className="text-white">{material.supplier || "N/A"}</span>
+                  <span className="text-foreground">{material.supplier || "N/A"}</span>
                 </div>
                 <div className="flex gap-2 pt-2">
                   <Button

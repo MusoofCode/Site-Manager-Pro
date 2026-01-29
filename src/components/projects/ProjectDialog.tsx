@@ -22,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DatePickerInput } from "@/components/common/DatePickerInput";
 
 const projectSchema = z.object({
   name: z.string().min(1, "Project name required"),
@@ -148,20 +149,20 @@ export const ProjectDialog = ({ open, onOpenChange, project, onSuccess }: Projec
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label>Start Date</Label>
-              <Input
-                type="date"
-                {...register("start_date")}
-                className="bg-construction-dark border-construction-steel text-white"
+              <DatePickerInput
+                value={watch("start_date")}
+                onChange={(val) => setValue("start_date", val, { shouldValidate: true })}
+                align="start"
               />
               {errors.start_date && <p className="text-red-400 text-sm mt-1">{errors.start_date.message}</p>}
             </div>
 
             <div>
               <Label>End Date</Label>
-              <Input
-                type="date"
-                {...register("end_date")}
-                className="bg-construction-dark border-construction-steel text-white"
+              <DatePickerInput
+                value={watch("end_date")}
+                onChange={(val) => setValue("end_date", val, { shouldValidate: true })}
+                align="start"
               />
               {errors.end_date && <p className="text-red-400 text-sm mt-1">{errors.end_date.message}</p>}
             </div>

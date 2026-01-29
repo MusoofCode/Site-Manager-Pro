@@ -57,7 +57,7 @@ const Workers = () => {
     <div className="p-8 space-y-6 page-enter">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-bold text-white">Workers & Contractors</h1>
+          <h1 className="text-4xl font-bold text-foreground">Workers & Contractors</h1>
           <p className="text-construction-concrete">Manage workforce</p>
         </div>
         <Button
@@ -76,13 +76,13 @@ const Workers = () => {
         {workers.map((worker) => (
           <Card key={worker.id} className="bg-gradient-card border-construction-steel/30 hover-scale">
             <CardHeader>
-              <CardTitle className="text-white">{worker.name}</CardTitle>
+              <CardTitle className="text-foreground">{worker.name}</CardTitle>
               <p className="text-construction-concrete text-sm">{worker.role}</p>
             </CardHeader>
             <CardContent className="space-y-2 text-sm">
               <div className="flex justify-between text-construction-concrete">
                 <span>Daily Rate:</span>
-                <span className="text-white font-medium">${Number(worker.daily_rate).toFixed(2)}</span>
+                <span className="text-foreground font-medium">${Number(worker.daily_rate).toFixed(2)}</span>
               </div>
               <div className="flex gap-2 pt-2">
                 <Button

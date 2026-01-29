@@ -37,10 +37,10 @@ const Payments = () => {
   }, [rows]);
 
   return (
-    <div className="p-8 space-y-6">
+    <div className="p-8 space-y-6 page-enter">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-bold text-white">Payments</h1>
+          <h1 className="text-4xl font-bold text-foreground">Payments</h1>
           <p className="text-construction-concrete">Worker payment tracking</p>
         </div>
         <Button onClick={() => setDialogOpen(true)} className="bg-gradient-hero hover:opacity-90">
@@ -52,12 +52,12 @@ const Payments = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="bg-gradient-card border-construction-steel/30">
           <CardHeader>
-            <CardTitle className="text-white">Totals by Worker</CardTitle>
+            <CardTitle className="text-foreground">Totals by Worker</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             {totals.map((t) => (
               <div key={t.worker_id} className="flex items-center justify-between p-3 bg-construction-dark rounded-lg">
-                <p className="text-white font-medium">{t.worker_name}</p>
+                <p className="text-foreground font-medium">{t.worker_name}</p>
                 <p className="text-construction-orange font-bold">${Number(t.total).toLocaleString()}</p>
               </div>
             ))}
@@ -67,16 +67,16 @@ const Payments = () => {
 
         <Card className="bg-gradient-card border-construction-steel/30">
           <CardHeader>
-            <CardTitle className="text-white">Recent Payments</CardTitle>
+            <CardTitle className="text-foreground">Recent Payments</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             {rows.slice(0, 20).map((p) => (
               <div key={p.id} className="flex items-center justify-between p-3 bg-construction-dark rounded-lg">
                 <div>
-                  <p className="text-white font-medium">{p.workers?.name ?? "Unknown"}</p>
+                  <p className="text-foreground font-medium">{p.workers?.name ?? "Unknown"}</p>
                   <p className="text-construction-concrete text-sm">{p.date}{p.description ? ` • ${p.description}` : ""}</p>
                 </div>
-                <p className="text-white font-medium">${Number(p.amount).toLocaleString()}</p>
+                <p className="text-foreground font-medium">${Number(p.amount).toLocaleString()}</p>
               </div>
             ))}
             {rows.length === 0 && <p className="text-construction-concrete text-center py-8">No payments yet</p>}

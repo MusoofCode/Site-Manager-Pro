@@ -16,7 +16,7 @@ const Attendance = () => {
     <div className="p-8 space-y-6 page-enter">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-bold text-white">Attendance</h1>
+          <h1 className="text-4xl font-bold text-foreground">Attendance</h1>
           <p className="text-construction-concrete">Daily workforce attendance</p>
         </div>
         <div className="flex items-center gap-3">

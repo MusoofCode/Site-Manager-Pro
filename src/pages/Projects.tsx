@@ -58,7 +58,7 @@ const Projects = () => {
     <div className="p-8 space-y-6 page-enter">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-bold text-white">Projects</h1>
+          <h1 className="text-4xl font-bold text-foreground">Projects</h1>
           <p className="text-construction-concrete">Manage construction projects</p>
         </div>
         <Button
@@ -77,13 +77,13 @@ const Projects = () => {
         {projects.map((project) => (
           <Card key={project.id} className="bg-gradient-card border-construction-steel/30 hover:shadow-construction transition hover-scale">
             <CardHeader>
-              <CardTitle className="text-white">{project.name}</CardTitle>
+              <CardTitle className="text-foreground">{project.name}</CardTitle>
               <p className="text-construction-concrete text-sm">{project.client_name}</p>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
               <div className="flex justify-between text-construction-concrete">
                 <span>Location:</span>
-                <span className="text-white">{project.location}</span>
+                <span className="text-foreground">{project.location}</span>
               </div>
               <div className="flex justify-between text-construction-concrete">
                 <span>Status:</span>
@@ -91,7 +91,7 @@ const Projects = () => {
               </div>
               <div className="flex justify-between text-construction-concrete">
                 <span>Budget:</span>
-                <span className="text-white">${Number(project.budget).toLocaleString()}</span>
+                <span className="text-foreground">${Number(project.budget).toLocaleString()}</span>
               </div>
               <div>
                 <div className="flex justify-between text-construction-concrete text-xs mb-1">

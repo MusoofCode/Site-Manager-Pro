@@ -44,13 +44,13 @@ const Documents = () => {
   };
 
   return (
-    <div className="p-8 space-y-6">
-      <h1 className="text-4xl font-bold text-white">Documents</h1>
+    <div className="p-8 space-y-6 page-enter">
+      <h1 className="text-4xl font-bold text-foreground">Documents</h1>
       <p className="text-construction-concrete">Manage project files</p>
 
       <Card className="bg-gradient-card border-construction-steel/30">
         <CardHeader>
-          <CardTitle className="text-white">Upload Documents</CardTitle>
+          <CardTitle className="text-foreground">Upload Documents</CardTitle>
         </CardHeader>
         <CardContent>
           <DocumentUpload onSuccess={fetchDocuments} />
@@ -59,7 +59,7 @@ const Documents = () => {
 
       <Card className="bg-gradient-card border-construction-steel/30">
         <CardHeader>
-          <CardTitle className="text-white">All Documents</CardTitle>
+          <CardTitle className="text-foreground">All Documents</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
@@ -68,7 +68,7 @@ const Documents = () => {
                 <div className="flex items-center gap-3">
                   <FileText className="h-8 w-8 text-construction-orange" />
                   <div>
-                    <p className="text-white font-medium">{doc.name}</p>
+                    <p className="text-foreground font-medium">{doc.name}</p>
                     <p className="text-construction-concrete text-sm">
                       {doc.file_type} • {(doc.file_size / 1024).toFixed(2)} KB
                       {doc.projects && ` • ${doc.projects.name}`}

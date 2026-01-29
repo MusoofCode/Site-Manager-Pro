@@ -128,6 +128,18 @@ const Reports = () => {
     return projectName ? `Project Report — ${projectName}` : "Project Report";
   }, [from, to, reportType, projectId, projects]);
 
+  // Export-specific titles (user requested removing the "Financial Report (...)" text from exports)
+  const exportHeading = useMemo(() => {
+    if (reportType === "monthly_financial") return "Monthly Financial Summary";
+    const projectName = projects.find((p) => p.id === projectId)?.name;
+    return projectName ? `Project Summary — ${projectName}` : "Project Summary";
+  }, [reportType, projectId, projects]);
+
+  const exportSubheading = useMemo(() => {
+    if (reportType === "monthly_financial") return `Period: ${from} → ${to}`;
+    return `Generated: ${new Date().toLocaleString()}`;
+  }, [reportType, from, to]);
+
   const exportExcel = async () => {
     const workbook = new ExcelJS.Workbook();
     workbook.creator = "SOMPROPERTY";
@@ -154,8 +166,12 @@ const Reports = () => {
     cover.getCell("B2").font = { bold: true, size: 20 };
 
     cover.mergeCells("B3:D3");
-    cover.getCell("B3").value = title;
+    cover.getCell("B3").value = exportHeading;
     cover.getCell("B3").font = { bold: true, size: 12 };
+
+    cover.mergeCells("B4:D4");
+    cover.getCell("B4").value = exportSubheading;
+    cover.getCell("B4").font = { size: 10, color: { argb: "FF6B7280" } };
 
     cover.getCell("B5").value = "Summary";
     cover.getCell("B5").font = { bold: true };
@@ -279,10 +295,11 @@ const Reports = () => {
 
     doc.setFontSize(18);
     doc.text("SOMPROPERTY", 150, 54);
-    doc.setFontSize(11);
-    doc.setTextColor(90);
-    doc.text(title, 150, 74, { maxWidth: pageWidth - 190 });
-    doc.setTextColor(0);
+     doc.setFontSize(11);
+     doc.setTextColor(90);
+     doc.text(exportHeading, 150, 74, { maxWidth: pageWidth - 190 });
+     doc.text(exportSubheading, 150, 90, { maxWidth: pageWidth - 190 });
+     doc.setTextColor(0);
 
     // KPI strip
     doc.setDrawColor(200);
@@ -352,14 +369,14 @@ const Reports = () => {
   return (
     <div className="p-8 space-y-6 page-enter">
       <div>
-        <h1 className="text-4xl font-bold text-white">Reports</h1>
+        <h1 className="text-4xl font-bold text-foreground">Reports</h1>
         <p className="text-construction-concrete">Generate PDF & Excel exports</p>
       </div>
 
       <Card className="bg-gradient-card border-construction-steel/30">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle className="text-white">Report Builder</CardTitle>
+              <CardTitle className="text-foreground">Report Builder</CardTitle>
             <p className="text-construction-concrete text-sm">{title}</p>
           </div>
           <div className="flex gap-2">
@@ -430,7 +447,7 @@ const Reports = () => {
 
           <div className="flex items-center justify-between">
             <p className="text-construction-concrete text-sm">
-              Total spent: <span className="text-white font-medium">${Number(kpis.totalSpent).toLocaleString()}</span> • Rows: <span className="text-white font-medium">{kpis.count}</span>
+               Total spent: <span className="text-foreground font-medium">${Number(kpis.totalSpent).toLocaleString()}</span> • Rows: <span className="text-foreground font-medium">{kpis.count}</span>
             </p>
             <Button onClick={run} disabled={loading} className="bg-gradient-hero hover:opacity-90">
               {loading ? "Generating..." : "Generate"}

@@ -160,7 +160,7 @@ const Auth = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   className="bg-construction-dark border-construction-steel text-white pl-10"
-                  placeholder="admin@company.com"
+                  placeholder="Enter the email"
                   autoComplete="email"
                 />
               </div>

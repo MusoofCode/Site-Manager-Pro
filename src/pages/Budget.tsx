@@ -64,7 +64,7 @@ const Budget = () => {
     <div className="p-8 space-y-6 page-enter">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-bold text-white">Budget & Costs</h1>
+          <h1 className="text-4xl font-bold text-foreground">Budget & Costs</h1>
           <p className="text-construction-concrete">Track project expenses</p>
         </div>
         <Button
@@ -81,12 +81,12 @@ const Budget = () => {
         {projectBudgets.map((project) => (
           <Card key={project.id} className="bg-gradient-card border-construction-steel/30">
             <CardHeader>
-              <CardTitle className="text-white">{project.name}</CardTitle>
+              <CardTitle className="text-foreground">{project.name}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex justify-between text-sm">
                 <span className="text-construction-concrete">Total Budget:</span>
-                <span className="text-white font-medium">${Number(project.budget).toLocaleString()}</span>
+                <span className="text-foreground font-medium">${Number(project.budget).toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-construction-concrete">Total Spent:</span>
@@ -155,7 +155,7 @@ const Budget = () => {
             {expenses.map((expense) => (
               <div key={expense.id} className="flex justify-between items-center p-3 bg-construction-dark rounded-lg">
                 <div>
-                  <p className="text-white font-medium">{expense.category}</p>
+                  <p className="text-foreground font-medium">{expense.category}</p>
                   <p className="text-construction-concrete text-sm">{expense.description}</p>
                 </div>
                 <p className="text-construction-orange font-bold">${Number(expense.amount).toLocaleString()}</p>
