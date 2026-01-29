@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { HardHat } from "lucide-react";
+import { HardHat, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import logo from "@/assets/logo.png";
 import * as z from "zod";
 
@@ -13,6 +13,7 @@ const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [checkingBootstrap, setCheckingBootstrap] = useState(true);
   const [adminExists, setAdminExists] = useState<boolean>(true);
@@ -84,7 +85,10 @@ const Auth = () => {
           if (bootstrapError) throw bootstrapError;
         }
 
-        toast({ title: "Login successful" });
+        toast({
+          title: "Welcome back",
+          description: "Successfully logged in.",
+        });
         navigate("/dashboard");
       } else {
         if (adminExists) {
@@ -114,11 +118,18 @@ const Auth = () => {
         const { error: loginError } = await supabase.auth.signInWithPassword({ email, password });
         if (loginError) throw loginError;
 
-        toast({ title: "Admin initialized" });
+        toast({
+          title: "Admin initialized",
+          description: "Your admin account is ready.",
+        });
         navigate("/dashboard");
       }
     } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({
+        title: "Login failed",
+        description: error.message,
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -140,25 +151,43 @@ const Auth = () => {
           <form onSubmit={handleAuth} className="space-y-4">
             <div>
               <Label htmlFor="email" className="text-white">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="bg-construction-dark border-construction-steel text-white"
-              />
+              <div className="relative">
+                <Mail className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-construction-concrete" />
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="bg-construction-dark border-construction-steel text-white pl-10"
+                  placeholder="admin@company.com"
+                  autoComplete="email"
+                />
+              </div>
             </div>
             <div>
               <Label htmlFor="password" className="text-white">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="bg-construction-dark border-construction-steel text-white"
-              />
+              <div className="relative">
+                <Lock className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-construction-concrete" />
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="bg-construction-dark border-construction-steel text-white pl-10 pr-10"
+                  placeholder="••••••••"
+                  autoComplete={isLogin ? "current-password" : "new-password"}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-construction-concrete hover:text-white transition"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
             </div>
             <Button
               type="submit"
