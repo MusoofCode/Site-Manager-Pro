@@ -64,7 +64,12 @@ const Dashboard = () => {
     { title: "Total Workers", value: stats.totalWorkers, icon: Users, color: "text-cyan-400" },
   ];
 
-  const COLORS = ["#FF6B35", "#4ECDC4", "#45B7D1", "#FFA07A"];
+  const COLORS = [
+    "hsl(var(--construction-orange))",
+    "hsl(var(--construction-steel))",
+    "hsl(var(--construction-concrete))",
+    "hsl(var(--foreground))",
+  ];
 
   return (
     <div className="p-8 space-y-8">
@@ -114,7 +119,11 @@ const Dashboard = () => {
                   ))}
                 </Pie>
                 <Tooltip
-                  contentStyle={{ backgroundColor: "#1a1f2e", border: "1px solid #444", color: "#fff" }}
+                  contentStyle={{
+                    backgroundColor: "hsl(var(--construction-slate))",
+                    border: "1px solid hsl(var(--construction-steel) / 0.6)",
+                    color: "hsl(var(--foreground))",
+                  }}
                 />
                 <Legend />
               </PieChart>

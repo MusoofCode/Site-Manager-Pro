@@ -11,6 +11,9 @@ import {
   Wrench,
   Users,
   FileText,
+  ClipboardCheck,
+  CreditCard,
+  FileBarChart2,
   LogOut,
   Menu,
   X,
@@ -34,7 +37,11 @@ const DashboardLayout = () => {
     { to: "/inventory", icon: Package, label: "Materials" },
     { to: "/equipment", icon: Wrench, label: "Equipment" },
     { to: "/workers", icon: Users, label: "Workers" },
+    { to: "/attendance", icon: ClipboardCheck, label: "Attendance" },
+    { to: "/payments", icon: CreditCard, label: "Payments" },
+    { to: "/maintenance", icon: Wrench, label: "Maintenance" },
     { to: "/documents", icon: FileText, label: "Documents" },
+    { to: "/reports", icon: FileBarChart2, label: "Reports" },
   ];
 
   return (

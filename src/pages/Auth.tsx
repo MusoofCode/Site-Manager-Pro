@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -7,39 +7,104 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { HardHat } from "lucide-react";
 import logo from "@/assets/logo.png";
+import * as z from "zod";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [checkingBootstrap, setCheckingBootstrap] = useState(true);
+  const [adminExists, setAdminExists] = useState<boolean>(true);
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  const authSchema = useMemo(
+    () =>
+      z.object({
+        email: z.string().trim().email("Invalid email"),
+        password: z.string().min(6, "Password must be at least 6 characters"),
+      }),
+    []
+  );
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke("admin-exists");
+        if (error) throw error;
+        const exists = Boolean((data as any)?.adminExists);
+        if (!mounted) return;
+        setAdminExists(exists);
+        // If an admin already exists, always show login only.
+        if (exists) setIsLogin(true);
+      } catch {
+        // Fail closed: if we can't determine, default to login-only.
+        if (mounted) {
+          setAdminExists(true);
+          setIsLogin(true);
+        }
+      } finally {
+        if (mounted) setCheckingBootstrap(false);
+      }
+    })();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
+      const parsed = authSchema.safeParse({ email, password });
+      if (!parsed.success) {
+        toast({
+          title: "Invalid input",
+          description: parsed.error.issues[0]?.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
       if (isLogin) {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         toast({ title: "Login successful" });
         navigate("/dashboard");
       } else {
+        if (adminExists) {
+          toast({
+            title: "Signup disabled",
+            description: "An admin account already exists. Please log in.",
+            variant: "destructive",
+          });
+          setIsLogin(true);
+          return;
+        }
+
         const { error, data } = await supabase.auth.signUp({
           email,
           password,
           options: { emailRedirectTo: `${window.location.origin}/dashboard` },
         });
         if (error) throw error;
-        
-        if (data.user) {
-          await supabase.from("user_roles").insert({ user_id: data.user.id, role: "admin" });
-        }
-        
-        toast({ title: "Account created! Please log in." });
-        setIsLogin(true);
+
+        if (!data.user) throw new Error("Signup succeeded but no user returned");
+
+        // Bootstrap the first admin using a privileged backend function.
+        const { error: bootstrapError } = await supabase.functions.invoke("bootstrap-admin");
+        if (bootstrapError) throw bootstrapError;
+
+        // Log in immediately after bootstrapping.
+        const { error: loginError } = await supabase.auth.signInWithPassword({ email, password });
+        if (loginError) throw loginError;
+
+        toast({ title: "Admin initialized" });
+        navigate("/dashboard");
       }
     } catch (error: any) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
@@ -86,19 +151,33 @@ const Auth = () => {
             </div>
             <Button
               type="submit"
-              disabled={loading}
+              disabled={loading || checkingBootstrap}
               className="w-full bg-gradient-hero hover:opacity-90 text-white font-bold"
             >
-              {loading ? "Processing..." : isLogin ? "Login" : "Sign Up"}
+              {checkingBootstrap
+                ? "Checking..."
+                : loading
+                  ? "Processing..."
+                  : isLogin
+                    ? "Login"
+                    : "Create Admin"}
             </Button>
           </form>
 
-          <button
-            onClick={() => setIsLogin(!isLogin)}
-            className="w-full mt-4 text-construction-concrete hover:text-construction-orange transition"
-          >
-            {isLogin ? "Need an account? Sign up" : "Have an account? Log in"}
-          </button>
+          {!adminExists && !checkingBootstrap && (
+            <button
+              onClick={() => setIsLogin(!isLogin)}
+              className="w-full mt-4 text-construction-concrete hover:text-construction-orange transition"
+            >
+              {isLogin ? "No admin yet? Create the first admin" : "Have an account? Log in"}
+            </button>
+          )}
+
+          {adminExists && !checkingBootstrap && (
+            <p className="mt-4 text-center text-sm text-construction-concrete">
+              Admin already initialized — login only.
+            </p>
+          )}
         </div>
       </div>
     </div>

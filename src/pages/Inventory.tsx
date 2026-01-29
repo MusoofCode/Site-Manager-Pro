@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertTriangle, Plus, Edit, Trash2 } from "lucide-react";
+import { AlertTriangle, Plus, Edit, Trash2, ArrowUpFromLine, History } from "lucide-react";
 import { MaterialDialog } from "@/components/materials/MaterialDialog";
+import { MaterialTransactionDialog } from "@/components/materials/MaterialTransactionDialog";
+import { MaterialHistoryDialog } from "@/components/materials/MaterialHistoryDialog";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -21,6 +23,10 @@ const Inventory = () => {
   const [materials, setMaterials] = useState<any[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedMaterial, setSelectedMaterial] = useState<any>(null);
+  const [movementOpen, setMovementOpen] = useState(false);
+  const [movementMaterial, setMovementMaterial] = useState<any>(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [historyMaterial, setHistoryMaterial] = useState<any>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [materialToDelete, setMaterialToDelete] = useState<any>(null);
 
@@ -107,6 +113,30 @@ const Inventory = () => {
                   <Button
                     size="sm"
                     variant="outline"
+                    onClick={() => {
+                      setMovementMaterial(material);
+                      setMovementOpen(true);
+                    }}
+                    className="flex-1 border-construction-steel text-construction-concrete hover:text-white"
+                  >
+                    <ArrowUpFromLine className="h-4 w-4 mr-1" />
+                    Stock
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setHistoryMaterial(material);
+                      setHistoryOpen(true);
+                    }}
+                    className="border-construction-steel text-construction-concrete hover:text-white"
+                    title="History"
+                  >
+                    <History className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
                     onClick={() => handleEdit(material)}
                     className="flex-1 border-construction-steel text-construction-concrete hover:text-white"
                   >
@@ -137,6 +167,23 @@ const Inventory = () => {
         material={selectedMaterial}
         onSuccess={fetchMaterials}
       />
+
+      {movementMaterial && (
+        <MaterialTransactionDialog
+          open={movementOpen}
+          onOpenChange={setMovementOpen}
+          material={movementMaterial}
+          onSuccess={fetchMaterials}
+        />
+      )}
+
+      {historyMaterial && (
+        <MaterialHistoryDialog
+          open={historyOpen}
+          onOpenChange={setHistoryOpen}
+          material={historyMaterial}
+        />
+      )}
 
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent className="bg-construction-slate border-construction-steel/30">

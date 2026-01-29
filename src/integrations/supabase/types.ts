@@ -198,6 +198,57 @@ export type Database = {
           },
         ]
       }
+      material_transactions: {
+        Row: {
+          created_at: string
+          id: string
+          material_id: string
+          note: string | null
+          occurred_at: string
+          project_id: string | null
+          quantity: number
+          transaction_type: string
+          unit_cost: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          material_id: string
+          note?: string | null
+          occurred_at?: string
+          project_id?: string | null
+          quantity: number
+          transaction_type: string
+          unit_cost?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          material_id?: string
+          note?: string | null
+          occurred_at?: string
+          project_id?: string | null
+          quantity?: number
+          transaction_type?: string
+          unit_cost?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "material_transactions_material_id_fkey"
+            columns: ["material_id"]
+            isOneToOne: false
+            referencedRelation: "materials"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "material_transactions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       materials: {
         Row: {
           category: string

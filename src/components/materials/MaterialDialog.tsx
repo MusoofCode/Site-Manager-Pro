@@ -145,8 +145,14 @@ export const MaterialDialog = ({ open, onOpenChange, material, onSuccess }: Mate
                 type="number"
                 {...register("quantity")}
                 className="bg-construction-dark border-construction-steel text-white"
+                disabled={Boolean(material)}
               />
               {errors.quantity && <p className="text-red-400 text-sm mt-1">{errors.quantity.message}</p>}
+              {material && (
+                <p className="text-construction-concrete text-xs mt-1">
+                  Use Stock In/Out to change quantity (keeps a history).
+                </p>
+              )}
             </div>
 
             <div>
