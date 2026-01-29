@@ -40,6 +40,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { NotificationCenter } from "@/components/notifications/NotificationCenter";
+import { CommunicationDialog } from "@/components/communication/CommunicationDialog";
 
 const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -185,6 +187,10 @@ const DashboardLayout = () => {
                     </SelectContent>
                   </Select>
                 </div>
+
+              <CommunicationDialog />
+
+              <NotificationCenter />
 
               <Button
                 type="button"

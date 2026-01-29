@@ -9,6 +9,56 @@ import { HardHat, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import logo from "@/assets/logo.png";
 import * as z from "zod";
 
+const COMMON_PASSWORDS = [
+  "password",
+  "password123",
+  "123456",
+  "12345678",
+  "qwerty",
+  "letmein",
+  "admin",
+  "welcome",
+  "iloveyou",
+  "monkey",
+];
+
+const AUTH_GUARD_STORAGE_KEY = "somproperty_auth_guard_v1";
+
+type AuthGuardState = {
+  attempts: number;
+  lockedUntil: number; // epoch ms
+  lastFailureAt: number; // epoch ms
+};
+
+function readAuthGuardState(email: string): AuthGuardState {
+  try {
+    const raw = localStorage.getItem(AUTH_GUARD_STORAGE_KEY);
+    const obj = raw ? (JSON.parse(raw) as Record<string, AuthGuardState>) : {};
+    return obj[email] ?? { attempts: 0, lockedUntil: 0, lastFailureAt: 0 };
+  } catch {
+    return { attempts: 0, lockedUntil: 0, lastFailureAt: 0 };
+  }
+}
+
+function writeAuthGuardState(email: string, state: AuthGuardState) {
+  try {
+    const raw = localStorage.getItem(AUTH_GUARD_STORAGE_KEY);
+    const obj = raw ? (JSON.parse(raw) as Record<string, AuthGuardState>) : {};
+    obj[email] = state;
+    localStorage.setItem(AUTH_GUARD_STORAGE_KEY, JSON.stringify(obj));
+  } catch {
+    // ignore
+  }
+}
+
+function clearAuthGuardState(email: string) {
+  writeAuthGuardState(email, { attempts: 0, lockedUntil: 0, lastFailureAt: 0 });
+}
+
+function sleep(ms: number) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
@@ -46,7 +96,15 @@ const Auth = () => {
     () =>
       z.object({
         email: z.string().trim().email("Invalid email"),
-        password: z.string().min(6, "Password must be at least 6 characters"),
+        password: z
+          .string()
+          .min(12, "Password must be at least 12 characters")
+          .max(72, "Password is too long")
+          .refine((v) => /[a-z]/.test(v), "Add at least one lowercase letter")
+          .refine((v) => /[A-Z]/.test(v), "Add at least one uppercase letter")
+          .refine((v) => /\d/.test(v), "Add at least one number")
+          .refine((v) => /[^A-Za-z0-9]/.test(v), "Add at least one symbol"),
+        // Note: common password check is done in code (below) so we can craft a friendlier message.
       }),
     []
   );
@@ -93,6 +151,36 @@ const Auth = () => {
         return;
       }
 
+      const normalizedEmail = email.trim().toLowerCase();
+      const guard = readAuthGuardState(normalizedEmail);
+      const now = Date.now();
+      if (guard.lockedUntil > now) {
+        const seconds = Math.ceil((guard.lockedUntil - now) / 1000);
+        toast({
+          title: "Please wait",
+          description: `Too many failed attempts. Try again in ${seconds}s.`,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!isLogin) {
+        const lower = password.trim().toLowerCase();
+        if (COMMON_PASSWORDS.includes(lower) || lower.includes("password")) {
+          toast({
+            title: "Weak password",
+            description: "Please choose a stronger password (avoid common passwords).",
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+
+      // Basic brute-force friction (client-side): small delay that increases with failures.
+      if (guard.attempts > 0) {
+        await sleep(Math.min(1000, 200 + guard.attempts * 150));
+      }
+
       if (isLogin) {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
@@ -111,6 +199,7 @@ const Auth = () => {
           title: "Welcome back",
           description: "Successfully logged in.",
         });
+        clearAuthGuardState(normalizedEmail);
         navigate("/dashboard");
       } else {
         if (adminExists) {
@@ -144,9 +233,24 @@ const Auth = () => {
           title: "Admin initialized",
           description: "Your admin account is ready.",
         });
+        clearAuthGuardState(normalizedEmail);
         navigate("/dashboard");
       }
     } catch (error: any) {
+      // Update local guard state for login attempts.
+      const normalizedEmail = email.trim().toLowerCase();
+      const prev = readAuthGuardState(normalizedEmail);
+      const now = Date.now();
+
+      // Reset attempts if last failure was long ago
+      const windowMs = 10 * 60 * 1000; // 10 minutes
+      const withinWindow = prev.lastFailureAt && now - prev.lastFailureAt <= windowMs;
+      const attempts = withinWindow ? prev.attempts + 1 : 1;
+      const lockAfter = 5;
+      const lockedUntil = attempts >= lockAfter ? now + 5 * 60 * 1000 : 0; // 5 minutes
+
+      writeAuthGuardState(normalizedEmail, { attempts, lockedUntil, lastFailureAt: now });
+
       toast({
         title: "Login failed",
         description: error.message,

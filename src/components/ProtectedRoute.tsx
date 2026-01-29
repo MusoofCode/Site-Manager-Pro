@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
@@ -81,8 +81,22 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-construction-dark flex items-center justify-center">
-        <Loader2 className="h-12 w-12 text-construction-orange animate-spin" />
+      <div className="min-h-screen bg-construction-dark flex items-center justify-center p-6">
+        <div className="w-full max-w-3xl space-y-6">
+          <div className="flex items-center gap-3">
+            <Skeleton className="h-10 w-10 rounded-md" />
+            <div className="space-y-2 flex-1">
+              <Skeleton className="h-4 w-40" />
+              <Skeleton className="h-3 w-56" />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Skeleton className="h-24" />
+            <Skeleton className="h-24" />
+            <Skeleton className="h-24" />
+          </div>
+          <Skeleton className="h-64" />
+        </div>
       </div>
     );
   }

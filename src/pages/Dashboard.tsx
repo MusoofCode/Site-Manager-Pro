@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
 import { FolderKanban, DollarSign, Package, TrendingUp, AlertTriangle, Wrench, Users } from "lucide-react";
 import {
   Bar,
@@ -20,6 +22,8 @@ import {
 import { format, parseISO, subDays } from "date-fns";
 
 const Dashboard = () => {
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     activeProjects: 0,
     totalBudget: 0,
@@ -37,16 +41,22 @@ const Dashboard = () => {
   }, []);
 
   const fetchStats = async () => {
+    setLoading(true);
     const fromDate = subDays(new Date(), 29);
 
-    const [projects, expenses, materials, equipment, workers, allProjects] = await Promise.all([
-      supabase.from("projects").select("*").eq("status", "Active"),
-      supabase.from("expenses").select("amount,date,category").gte("date", format(fromDate, "yyyy-MM-dd")),
-      supabase.from("materials").select("category,quantity,low_stock_threshold"),
-      supabase.from("equipment").select("*").eq("available", false),
-      supabase.from("workers").select("role"),
-      supabase.from("projects").select("status"),
-    ]);
+    try {
+      const [projects, expenses, materials, equipment, workers, allProjects] = await Promise.all([
+        supabase.from("projects").select("*").eq("status", "Active"),
+        supabase.from("expenses").select("amount,date,category").gte("date", format(fromDate, "yyyy-MM-dd")),
+        supabase.from("materials").select("category,quantity,low_stock_threshold"),
+        supabase.from("equipment").select("*").eq("available", false),
+        supabase.from("workers").select("role"),
+        supabase.from("projects").select("status"),
+      ]);
+
+      const firstError =
+        projects.error || expenses.error || materials.error || equipment.error || workers.error || allProjects.error;
+      if (firstError) throw firstError;
 
       const totalBudget = projects.data?.reduce((sum, p) => sum + Number(p.budget), 0) || 0;
       const totalSpent = expenses.data?.reduce((sum, e) => sum + Number(e.amount), 0) || 0;
@@ -57,41 +67,46 @@ const Dashboard = () => {
         totalBudget,
         totalSpent,
         lowStockItems: lowStock,
-      equipmentInUse: equipment.data?.length || 0,
-      totalWorkers: workers.data?.length || 0,
+        equipmentInUse: equipment.data?.length || 0,
+        totalWorkers: workers.data?.length || 0,
       });
 
-    // Project status chart
-    const statusCounts: Record<string, number> = {};
-    allProjects.data?.forEach((p) => {
-      statusCounts[p.status] = (statusCounts[p.status] || 0) + 1;
-    });
+      // Project status chart
+      const statusCounts: Record<string, number> = {};
+      allProjects.data?.forEach((p) => {
+        statusCounts[p.status] = (statusCounts[p.status] || 0) + 1;
+      });
 
-    const chartData = Object.entries(statusCounts).map(([status, count]) => ({
-      name: status,
-      value: count,
-    }));
-    setProjectsByStatus(chartData);
+      const chartData = Object.entries(statusCounts).map(([status, count]) => ({
+        name: status,
+        value: count,
+      }));
+      setProjectsByStatus(chartData);
 
-    // Expenses (last 30 days) line chart
-    const expenseTotalsByDay = new Map<string, number>();
-    for (let i = 0; i < 30; i++) {
-      const d = subDays(new Date(), 29 - i);
-      expenseTotalsByDay.set(format(d, "MMM d"), 0);
+      // Expenses (last 30 days) line chart
+      const expenseTotalsByDay = new Map<string, number>();
+      for (let i = 0; i < 30; i++) {
+        const d = subDays(new Date(), 29 - i);
+        expenseTotalsByDay.set(format(d, "MMM d"), 0);
+      }
+      expenses.data?.forEach((e) => {
+        const dayKey = format(parseISO(e.date), "MMM d");
+        expenseTotalsByDay.set(dayKey, (expenseTotalsByDay.get(dayKey) || 0) + Number(e.amount || 0));
+      });
+      setExpensesByDay(Array.from(expenseTotalsByDay.entries()).map(([day, amount]) => ({ day, amount })));
+
+      // Materials by category bar chart
+      const matTotals = new Map<string, number>();
+      materials.data?.forEach((m) => {
+        const key = m.category || "Uncategorized";
+        matTotals.set(key, (matTotals.get(key) || 0) + Number(m.quantity || 0));
+      });
+      setMaterialsByCategory(Array.from(matTotals.entries()).map(([category, quantity]) => ({ category, quantity })));
+    } catch (e: any) {
+      toast({ title: "Dashboard", description: e.message, variant: "destructive" });
+    } finally {
+      setLoading(false);
     }
-    expenses.data?.forEach((e) => {
-      const dayKey = format(parseISO(e.date), "MMM d");
-      expenseTotalsByDay.set(dayKey, (expenseTotalsByDay.get(dayKey) || 0) + Number(e.amount || 0));
-    });
-    setExpensesByDay(Array.from(expenseTotalsByDay.entries()).map(([day, amount]) => ({ day, amount })));
-
-    // Materials by category bar chart
-    const matTotals = new Map<string, number>();
-    materials.data?.forEach((m) => {
-      const key = m.category || "Uncategorized";
-      matTotals.set(key, (matTotals.get(key) || 0) + Number(m.quantity || 0));
-    });
-    setMaterialsByCategory(Array.from(matTotals.entries()).map(([category, quantity]) => ({ category, quantity })));
   };
 
   const cards = [
@@ -121,24 +136,36 @@ const Dashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {cards.map((card) => (
-          <Card
-            key={card.title}
-            className="bg-gradient-card border-construction-steel/30 hover:shadow-construction transition-all duration-300 hover:scale-105"
-          >
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-construction-concrete">{card.title}</CardTitle>
-              <card.icon className={`h-5 w-5 ${card.color}`} />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-foreground animate-fade-in">{card.value}</div>
-            </CardContent>
-          </Card>
-        ))}
+        {loading
+          ? Array.from({ length: 6 }).map((_, idx) => (
+              <Card key={idx} className="bg-gradient-card border-construction-steel/30">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <Skeleton className="h-4 w-28" />
+                  <Skeleton className="h-5 w-5 rounded-full" />
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className="h-8 w-36" />
+                </CardContent>
+              </Card>
+            ))
+          : cards.map((card) => (
+              <Card
+                key={card.title}
+                className="bg-gradient-card border-construction-steel/30 hover:shadow-construction transition-all duration-300 hover:scale-105 active:scale-[1.02]"
+              >
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium text-construction-concrete">{card.title}</CardTitle>
+                  <card.icon className={`h-5 w-5 ${card.color}`} />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-foreground animate-fade-in">{card.value}</div>
+                </CardContent>
+              </Card>
+            ))}
       </div>
 
       {/* Project Status Chart */}
-      {projectsByStatus.length > 0 && (
+      {!loading && projectsByStatus.length > 0 && (
         <Card className="bg-gradient-card border-construction-steel/30">
           <CardHeader>
             <CardTitle className="text-foreground">Projects by Status</CardTitle>
@@ -181,8 +208,13 @@ const Dashboard = () => {
             <CardTitle className="text-foreground">Expenses (Last 30 Days)</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={expensesByDay} margin={{ left: 8, right: 12 }}>
+            {loading ? (
+              <div className="h-[300px] flex items-center justify-center">
+                <Skeleton className="h-[260px] w-full" />
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={expensesByDay} margin={{ left: 8, right: 12 }}>
                 <CartesianGrid stroke={gridStroke} strokeDasharray="4 4" />
                 <XAxis dataKey="day" tick={{ fill: axisTick }} interval={4} />
                 <YAxis tick={{ fill: axisTick }} />
@@ -201,8 +233,9 @@ const Dashboard = () => {
                   strokeWidth={2}
                   dot={false}
                 />
-              </LineChart>
-            </ResponsiveContainer>
+                </LineChart>
+              </ResponsiveContainer>
+            )}
           </CardContent>
         </Card>
 
@@ -212,8 +245,13 @@ const Dashboard = () => {
             <CardTitle className="text-foreground">Materials by Category</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={materialsByCategory} margin={{ left: 8, right: 12 }}>
+            {loading ? (
+              <div className="h-[300px] flex items-center justify-center">
+                <Skeleton className="h-[260px] w-full" />
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={materialsByCategory} margin={{ left: 8, right: 12 }}>
                 <CartesianGrid stroke={gridStroke} strokeDasharray="4 4" />
                 <XAxis
                   dataKey="category"
@@ -237,8 +275,9 @@ const Dashboard = () => {
                     <Cell key={idx} fill={COLORS[idx % COLORS.length]} />
                   ))}
                 </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </CardContent>
         </Card>
       </div>
