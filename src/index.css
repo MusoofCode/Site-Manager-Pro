@@ -54,17 +54,17 @@ All colors MUST be HSL.
 
     --sidebar-ring: 217.2 91.2% 59.8%;
 
-    /* Construction theme tokens */
-    --construction-orange: 28 100% 55%;
-    --construction-dark: 220 15% 12%;
-    --construction-slate: 220 13% 20%;
-    --construction-steel: 210 10% 35%;
+    /* Construction theme tokens (LIGHT) */
+    --construction-orange: 28 100% 52%;
     --construction-amber: 38 92% 50%;
-    --construction-concrete: 220 9% 46%;
-    
+    --construction-dark: 220 18% 96%;
+    --construction-slate: 220 20% 98%;
+    --construction-steel: 220 10% 70%;
+    --construction-concrete: 220 9% 40%;
+
     --gradient-hero: linear-gradient(135deg, hsl(var(--construction-orange)), hsl(var(--construction-amber)));
     --gradient-card: linear-gradient(to bottom, hsl(var(--construction-slate)), hsl(var(--construction-dark)));
-    --shadow-construction: 0 10px 40px -12px hsl(var(--construction-orange) / 0.4);
+    --shadow-construction: 0 10px 40px -12px hsl(var(--construction-orange) / 0.25);
   }
 
   .dark {
@@ -103,6 +103,18 @@ All colors MUST be HSL.
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Construction theme tokens (DARK) */
+    --construction-orange: 28 100% 55%;
+    --construction-amber: 38 92% 50%;
+    --construction-dark: 220 15% 12%;
+    --construction-slate: 220 13% 20%;
+    --construction-steel: 210 10% 35%;
+    --construction-concrete: 220 9% 46%;
+
+    --gradient-hero: linear-gradient(135deg, hsl(var(--construction-orange)), hsl(var(--construction-amber)));
+    --gradient-card: linear-gradient(to bottom, hsl(var(--construction-slate)), hsl(var(--construction-dark)));
+    --shadow-construction: 0 10px 40px -12px hsl(var(--construction-orange) / 0.4);
   }
 }
 
@@ -113,5 +125,15 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .hover-scale {
+    @apply transition-transform duration-200 hover:scale-[1.02] motion-reduce:transition-none motion-reduce:hover:scale-100;
+  }
+
+  .page-enter {
+    @apply animate-in fade-in-0 slide-in-from-bottom-2 duration-300 motion-reduce:animate-none;
   }
 }

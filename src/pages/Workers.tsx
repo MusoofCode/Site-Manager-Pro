@@ -54,7 +54,7 @@ const Workers = () => {
   };
 
   return (
-    <div className="p-8 space-y-6">
+    <div className="p-8 space-y-6 page-enter">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-4xl font-bold text-white">Workers & Contractors</h1>
@@ -74,7 +74,7 @@ const Workers = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {workers.map((worker) => (
-          <Card key={worker.id} className="bg-gradient-card border-construction-steel/30">
+          <Card key={worker.id} className="bg-gradient-card border-construction-steel/30 hover-scale">
             <CardHeader>
               <CardTitle className="text-white">{worker.name}</CardTitle>
               <p className="text-construction-concrete text-sm">{worker.role}</p>
