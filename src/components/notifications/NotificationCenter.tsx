@@ -3,10 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { Archive, Bell, CheckCheck, Mail, RotateCcw } from "lucide-react";
+import { Archive, Bell, CheckCheck, RotateCcw } from "lucide-react";
 import { formatDistanceToNowStrict } from "date-fns";
 import { useNotifications } from "./useNotifications";
 
@@ -14,29 +13,23 @@ type Props = {
   triggerClassName?: string;
 };
 
-const typeLabel: Record<string, string> = {
-  low_stock: "Low stock",
-  project_deadline: "Deadlines",
-  maintenance: "Maintenance",
-  system: "System",
-};
-
-function severityBadgeClass(severity: string) {
-  switch (severity) {
-    case "critical":
+function actionBadgeClass(action: string) {
+  switch (action) {
+    case "DELETE":
       return "bg-destructive/20 text-destructive";
-    case "warning":
+    case "UPDATE":
       return "bg-primary/15 text-primary";
+    case "INSERT":
+      return "bg-muted text-foreground";
     default:
       return "bg-muted text-muted-foreground";
   }
 }
 
 export function NotificationCenter({ triggerClassName }: Props) {
-  const [tab, setTab] = useState<"inbox" | "archived" | "rules">("inbox");
+  const [tab, setTab] = useState<"inbox" | "archived">("inbox");
   const {
     loading,
-    rulesLoading,
     unreadCount,
     activeItems,
     archivedItems,
@@ -45,8 +38,6 @@ export function NotificationCenter({ triggerClassName }: Props) {
     unarchive,
     markAllRead,
     refresh,
-    ruleEnabled,
-    setRuleEnabled,
   } = useNotifications();
 
   const inboxItems = useMemo(() => activeItems, [activeItems]);
@@ -97,14 +88,6 @@ export function NotificationCenter({ triggerClassName }: Props) {
           >
             Archived
           </Button>
-          <Button
-            type="button"
-            variant={tab === "rules" ? "default" : "outline"}
-            className={tab === "rules" ? "bg-gradient-hero" : "border-construction-steel text-construction-concrete hover:bg-construction-steel/20 hover:text-white"}
-            onClick={() => setTab("rules")}
-          >
-            Rules
-          </Button>
 
           <div className="ml-auto flex items-center gap-2">
             <Button
@@ -132,132 +115,87 @@ export function NotificationCenter({ triggerClassName }: Props) {
 
         <Separator className="my-4 bg-construction-steel/30" />
 
-        {tab === "rules" ? (
-          <div className="space-y-4">
-            <Card className="bg-construction-dark/40 border-construction-steel/30 p-4">
-              <div className="flex items-center gap-3">
-                <div className="h-9 w-9 rounded-md bg-muted flex items-center justify-center">
-                  <Mail className="h-4 w-4" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-foreground font-semibold leading-tight">Notification rules</p>
-                  <p className="text-construction-concrete text-xs leading-tight">
-                    Enable/disable types. (Defaults are ON.)
-                  </p>
-                </div>
-              </div>
-              <div className="mt-4 space-y-3">
-                {rulesLoading ? (
-                  <div className="space-y-2">
-                    <Skeleton className="h-10 w-full" />
-                    <Skeleton className="h-10 w-full" />
-                    <Skeleton className="h-10 w-full" />
-                  </div>
-                ) : (
-                  <>
-                    {([
-                      { type: "low_stock" as const, label: "Low stock" },
-                      { type: "project_deadline" as const, label: "Project deadlines" },
-                      { type: "maintenance" as const, label: "Maintenance reminders" },
-                    ] as const).map((r) => (
-                      <div key={r.type} className="flex items-center justify-between gap-4">
-                        <div className="min-w-0">
-                          <p className="text-foreground font-medium truncate">{r.label}</p>
-                          <p className="text-construction-concrete text-xs truncate">Realtime + in-app alerts</p>
-                        </div>
-                        <Switch
-                          checked={ruleEnabled(r.type)}
-                          onCheckedChange={(v) => setRuleEnabled(r.type, Boolean(v))}
-                        />
-                      </div>
-                    ))}
-                  </>
-                )}
-              </div>
+        <div className="space-y-3">
+          {loading ? (
+            <div className="space-y-3">
+              <Skeleton className="h-20 w-full" />
+              <Skeleton className="h-20 w-full" />
+              <Skeleton className="h-20 w-full" />
+            </div>
+          ) : (tab === "archived" ? archivedItems : inboxItems).length === 0 ? (
+            <Card className="bg-construction-dark/40 border-construction-steel/30 p-6">
+              <p className="text-foreground font-semibold">Nothing here</p>
+              <p className="text-construction-concrete text-sm mt-1">You’re all caught up.</p>
             </Card>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {loading ? (
-              <div className="space-y-3">
-                <Skeleton className="h-20 w-full" />
-                <Skeleton className="h-20 w-full" />
-                <Skeleton className="h-20 w-full" />
-              </div>
-            ) : (tab === "archived" ? archivedItems : inboxItems).length === 0 ? (
-              <Card className="bg-construction-dark/40 border-construction-steel/30 p-6">
-                <p className="text-foreground font-semibold">Nothing here</p>
-                <p className="text-construction-concrete text-sm mt-1">You’re all caught up.</p>
-              </Card>
-            ) : (
-              (tab === "archived" ? archivedItems : inboxItems).map((n) => {
-                const age = formatDistanceToNowStrict(new Date(n.created_at), { addSuffix: true });
-                const isUnread = !n.read_at;
-                const badge = typeLabel[n.type] ?? n.type;
+          ) : (
+            (tab === "archived" ? archivedItems : inboxItems).map((n) => {
+              const age = formatDistanceToNowStrict(new Date(n.created_at), { addSuffix: true });
+              const isUnread = !n.read_at;
 
-                return (
-                  <Card
-                    key={n.id}
-                    className={cn(
-                      "bg-gradient-card border-construction-steel/30 p-4 transition-all",
-                      isUnread ? "shadow-construction" : "opacity-95"
-                    )}
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className={cn("text-xs px-2 py-1 rounded-full", severityBadgeClass(String(n.severity)))}>
-                            {badge}
-                          </span>
-                          <span className="text-xs text-construction-concrete">{age}</span>
-                          {isUnread && (
-                            <span className="text-xs px-2 py-1 rounded-full bg-primary/15 text-primary">Unread</span>
-                          )}
-                        </div>
-                        <p className="text-foreground font-semibold mt-2 truncate">{n.title}</p>
-                        {n.body && <p className="text-construction-concrete text-sm mt-1 line-clamp-2">{n.body}</p>}
-                      </div>
-
-                      <div className="shrink-0 flex items-center gap-2">
-                        {tab === "archived" ? (
-                          <Button
-                            type="button"
-                            variant="outline"
-                            className="border-construction-steel text-construction-concrete hover:bg-construction-steel/20 hover:text-white"
-                            onClick={() => unarchive(n.id)}
-                            title="Restore"
-                          >
-                            <RotateCcw className="h-4 w-4" />
-                          </Button>
-                        ) : (
-                          <Button
-                            type="button"
-                            variant="outline"
-                            className="border-construction-steel text-construction-concrete hover:bg-construction-steel/20 hover:text-white"
-                            onClick={() => archive(n.id)}
-                            title="Archive"
-                          >
-                            <Archive className="h-4 w-4" />
-                          </Button>
+              return (
+                <Card
+                  key={n.id}
+                  className={cn(
+                    "bg-gradient-card border-construction-steel/30 p-4 transition-all",
+                    isUnread ? "shadow-construction" : "opacity-95"
+                  )}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className={cn("text-xs px-2 py-1 rounded-full", actionBadgeClass(String(n.action)))}>
+                          {n.action}
+                        </span>
+                        <span className="text-xs px-2 py-1 rounded-full bg-muted text-muted-foreground">
+                          {n.entity_table}
+                        </span>
+                        <span className="text-xs text-construction-concrete">{age}</span>
+                        {isUnread && (
+                          <span className="text-xs px-2 py-1 rounded-full bg-primary/15 text-primary">Unread</span>
                         )}
+                      </div>
+                      <p className="text-foreground font-semibold mt-2 truncate">{n.message}</p>
+                    </div>
 
+                    <div className="shrink-0 flex items-center gap-2">
+                      {tab === "archived" ? (
                         <Button
                           type="button"
                           variant="outline"
                           className="border-construction-steel text-construction-concrete hover:bg-construction-steel/20 hover:text-white"
-                          onClick={() => markRead(n.id, Boolean(n.read_at) ? false : true)}
-                          title={n.read_at ? "Mark unread" : "Mark read"}
+                          onClick={() => unarchive(n.id)}
+                          title="Restore"
                         >
-                          <CheckCheck className="h-4 w-4" />
+                          <RotateCcw className="h-4 w-4" />
                         </Button>
-                      </div>
+                      ) : (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="border-construction-steel text-construction-concrete hover:bg-construction-steel/20 hover:text-white"
+                          onClick={() => archive(n.id)}
+                          title="Archive"
+                        >
+                          <Archive className="h-4 w-4" />
+                        </Button>
+                      )}
+
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="border-construction-steel text-construction-concrete hover:bg-construction-steel/20 hover:text-white"
+                        onClick={() => markRead(n.id, Boolean(n.read_at) ? false : true)}
+                        title={n.read_at ? "Mark unread" : "Mark read"}
+                      >
+                        <CheckCheck className="h-4 w-4" />
+                      </Button>
                     </div>
-                  </Card>
-                );
-              })
-            )}
-          </div>
-        )}
+                  </div>
+                </Card>
+              );
+            })
+          )}
+        </div>
       </SheetContent>
     </Sheet>
   );

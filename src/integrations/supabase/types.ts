@@ -14,6 +14,77 @@ export type Database = {
   }
   public: {
     Tables: {
+      activity_event_states: {
+        Row: {
+          archived_at: string | null
+          created_at: string
+          event_id: string
+          id: string
+          read_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          archived_at?: string | null
+          created_at?: string
+          event_id: string
+          id?: string
+          read_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          archived_at?: string | null
+          created_at?: string
+          event_id?: string
+          id?: string
+          read_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_event_states_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "activity_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      activity_events: {
+        Row: {
+          action: string
+          actor_user_id: string | null
+          created_at: string
+          entity_id: string | null
+          entity_table: string
+          id: string
+          message: string
+          metadata: Json
+        }
+        Insert: {
+          action: string
+          actor_user_id?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_table: string
+          id?: string
+          message: string
+          metadata?: Json
+        }
+        Update: {
+          action?: string
+          actor_user_id?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_table?: string
+          id?: string
+          message?: string
+          metadata?: Json
+        }
+        Relationships: []
+      }
       attendance: {
         Row: {
           created_at: string | null
@@ -567,6 +638,18 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      log_activity_event: {
+        Args: {
+          _action: string
+          _actor_user_id: string
+          _entity_id: string
+          _entity_table: string
+          _keep_last?: number
+          _message: string
+          _metadata: Json
+        }
+        Returns: undefined
       }
     }
     Enums: {
