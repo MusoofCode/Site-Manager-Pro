@@ -168,8 +168,6 @@ export function AppHeader({ onLogout }: { onLogout: () => void }) {
                   title="Session status"
                 >
                   <User className="h-4 w-4" />
-                  <span className="max-w-[200px] truncate">{sessionEmail}</span>
-                  <span className="text-muted-foreground">•</span>
                   <span className="inline-flex items-center gap-1">
                     <ShieldCheck className="h-4 w-4" />
                     {isAdmin ? "Admin" : "User"}
