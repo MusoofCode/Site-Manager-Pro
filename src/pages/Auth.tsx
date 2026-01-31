@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { HardHat, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import logo from "@/assets/logo.png";
+import { useTheme } from "next-themes";
 import * as z from "zod";
 
 const COMMON_PASSWORDS = [
@@ -69,6 +70,8 @@ const Auth = () => {
   const [adminExists, setAdminExists] = useState<boolean>(true);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { resolvedTheme } = useTheme();
+  const isDark = (resolvedTheme ?? "dark") === "dark";
 
   // If already authenticated, never keep the user on /auth.
   useEffect(() => {
@@ -262,53 +265,57 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-construction-dark flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <div className="bg-construction-slate border border-construction-steel/30 rounded-xl p-8 shadow-construction">
+        <div className="bg-card border border-border rounded-2xl p-8 shadow-lg">
           <div className="flex flex-col items-center mb-8">
-            <img src={logo} alt="SOMPROPERTY" className="h-20 w-20 mb-4" />
-            <h1 className="text-3xl font-bold text-white flex items-center gap-2">
-              <HardHat className="text-construction-orange" />
+            <img
+              src={logo}
+              alt="SOMPROPERTY"
+              className={"h-20 w-20 mb-4 " + (isDark ? "" : "invert saturate-0")}
+            />
+            <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
+              <HardHat className="text-primary" />
               SOMPROPERTY
             </h1>
-            <p className="text-construction-concrete mt-2">Project Management System</p>
+            <p className="text-muted-foreground mt-2">Project Management System</p>
           </div>
 
           <form onSubmit={handleAuth} className="space-y-4">
             <div>
-              <Label htmlFor="email" className="text-white">Email</Label>
+              <Label htmlFor="email" className="text-foreground">Email</Label>
               <div className="relative">
-                <Mail className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-construction-concrete" />
+                <Mail className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="bg-construction-dark border-construction-steel text-white pl-10"
+                  className="pl-10"
                   placeholder="Enter the email"
                   autoComplete="email"
                 />
               </div>
             </div>
             <div>
-              <Label htmlFor="password" className="text-white">Password</Label>
+              <Label htmlFor="password" className="text-foreground">Password</Label>
               <div className="relative">
-                <Lock className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-construction-concrete" />
+                <Lock className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="bg-construction-dark border-construction-steel text-white pl-10 pr-10"
+                  className="pl-10 pr-10"
                   placeholder="••••••••"
                   autoComplete={isLogin ? "current-password" : "new-password"}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-construction-concrete hover:text-white transition"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition"
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -318,7 +325,7 @@ const Auth = () => {
             <Button
               type="submit"
               disabled={loading || checkingBootstrap}
-              className="w-full bg-gradient-hero hover:opacity-90 text-white font-bold"
+              className="w-full font-semibold"
             >
               {checkingBootstrap
                 ? "Checking..."
@@ -333,14 +340,14 @@ const Auth = () => {
           {!adminExists && !checkingBootstrap && (
             <button
               onClick={() => setIsLogin(!isLogin)}
-              className="w-full mt-4 text-construction-concrete hover:text-construction-orange transition"
+              className="w-full mt-4 text-muted-foreground hover:text-foreground transition"
             >
               {isLogin ? "No admin yet? Create the first admin" : "Have an account? Log in"}
             </button>
           )}
 
           {adminExists && !checkingBootstrap && (
-            <p className="mt-4 text-center text-sm text-construction-concrete">
+            <p className="mt-4 text-center text-sm text-muted-foreground">
               Admin already initialized — login only.
             </p>
           )}

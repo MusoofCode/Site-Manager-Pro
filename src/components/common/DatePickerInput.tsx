@@ -37,7 +37,7 @@ export function DatePickerInput({
           type="button"
           variant="outline"
           className={cn(
-            "w-full justify-start text-left font-normal bg-construction-dark border-construction-steel",
+            "w-full justify-start text-left font-normal bg-background",
             !selected && "text-muted-foreground",
             className,
           )}
@@ -46,7 +46,7 @@ export function DatePickerInput({
           {selected ? format(selected, "PPP") : <span>{placeholder}</span>}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align={align}>
+      <PopoverContent className="w-auto p-0 bg-popover" align={align}>
         <Calendar
           mode="single"
           selected={selected}

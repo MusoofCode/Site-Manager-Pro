@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import type React from "react";
 import { useLocation } from "react-router-dom";
+import { useTheme } from "next-themes";
 import {
   ClipboardCheck,
   CreditCard,
@@ -44,6 +45,8 @@ export function AppSidebar({ onLogout }: { onLogout: () => void }) {
   const location = useLocation();
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
+  const { resolvedTheme } = useTheme();
+  const isDark = (resolvedTheme ?? "dark") === "dark";
 
   const groups = useMemo(
     () =>
@@ -93,7 +96,11 @@ export function AppSidebar({ onLogout }: { onLogout: () => void }) {
           <img
             src={logo}
             alt="SOMPROPERTY"
-            className="h-9 w-9 shrink-0 rounded-xl"
+            className={cn(
+              "h-9 w-9 shrink-0 rounded-xl",
+              // white in dark mode, black in light mode
+              isDark ? "" : "invert saturate-0",
+            )}
             loading="eager"
           />
           {!collapsed && (

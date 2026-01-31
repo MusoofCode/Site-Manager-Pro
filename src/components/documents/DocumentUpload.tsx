@@ -100,10 +100,8 @@ export const DocumentUpload = ({ projectId, onSuccess }: DocumentUploadProps) =>
         onDragLeave={handleDrag}
         onDragOver={handleDrag}
         onDrop={handleDrop}
-        className={`border-2 border-dashed rounded-lg p-8 text-center transition ${
-          dragActive
-            ? "border-construction-orange bg-construction-orange/10"
-            : "border-construction-steel/30 hover:border-construction-steel"
+        className={`border-2 border-dashed rounded-2xl p-8 text-center transition ${
+          dragActive ? "border-ring bg-accent/40" : "border-border hover:border-ring/50"
         }`}
       >
         <input
@@ -117,17 +115,17 @@ export const DocumentUpload = ({ projectId, onSuccess }: DocumentUploadProps) =>
 
         {uploading ? (
           <div className="space-y-3">
-            <p className="text-construction-concrete">Uploading...</p>
+            <p className="text-muted-foreground">Uploading…</p>
             <Progress value={progress} className="h-2" />
           </div>
         ) : (
           <>
-            <Upload className="h-12 w-12 text-construction-concrete mx-auto mb-4" />
-            <p className="text-white mb-2">Drag and drop files here</p>
-            <p className="text-construction-concrete text-sm mb-4">or</p>
+            <Upload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <p className="text-foreground mb-2 font-medium">Drag and drop a PDF here</p>
+            <p className="text-muted-foreground text-sm mb-4">or</p>
             <Button
               onClick={() => fileInputRef.current?.click()}
-              className="bg-gradient-hero hover:opacity-90"
+              variant="default"
             >
               Browse Files
             </Button>

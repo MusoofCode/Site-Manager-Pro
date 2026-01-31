@@ -47,10 +47,24 @@ export function AppHeader({ onLogout }: { onLogout: () => void }) {
   const isDark = effectiveTheme === "dark";
 
   const dateTimeLabel = useMemo(() => {
-    const date = now.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "2-digit" });
-    const time = now.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
-    return { date, time };
+    const date = new Intl.DateTimeFormat(undefined, {
+      weekday: "short",
+      year: "numeric",
+      month: "short",
+      day: "2-digit",
+    }).format(now);
+
+    const time = new Intl.DateTimeFormat(undefined, {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }).format(now);
+
+    const [hh, mm] = time.split(":");
+    return { date, time, hh: hh ?? "00", mm: mm ?? "00" };
   }, [now]);
+
+  const minuteKey = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}-${now.getHours()}-${now.getMinutes()}`;
 
   return (
     <header className="sticky top-0 z-40 px-2 pt-2">
@@ -66,8 +80,12 @@ export function AppHeader({ onLogout }: { onLogout: () => void }) {
         <div className="flex items-center gap-2">
           <div className="hidden sm:flex items-center gap-2 rounded-full border border-border bg-background/60 px-3 py-2">
             <Clock className="h-4 w-4 text-muted-foreground" />
-            <div className="text-xs">
-              <span className="font-medium text-foreground">{dateTimeLabel.time}</span>
+            <div className="text-xs tabular-nums">
+              <span key={minuteKey} className="inline-flex items-baseline gap-0.5 font-semibold text-foreground animate-in fade-in-0 duration-200">
+                <span>{dateTimeLabel.hh}</span>
+                <span className="mx-0.5 text-muted-foreground motion-safe:animate-pulse">:</span>
+                <span>{dateTimeLabel.mm}</span>
+              </span>
               <span className="text-muted-foreground"> • {dateTimeLabel.date}</span>
             </div>
           </div>
