@@ -285,7 +285,7 @@ const Auth = () => {
             <img
               src={isDark ? logoDark : logoLight}
               alt="SOMPROPERTY"
-              className="h-20 w-20 mb-4"
+              className="h-20 w-20 mb-4 object-contain p-1"
             />
             <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
               <HardHat className="text-primary" />

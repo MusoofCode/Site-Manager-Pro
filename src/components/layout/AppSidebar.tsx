@@ -97,7 +97,7 @@ export function AppSidebar({ onLogout }: { onLogout: () => void }) {
           <img
             src={isDark ? logoDark : logoLight}
             alt="SOMPROPERTY"
-            className={cn("h-9 w-9 shrink-0 rounded-xl")}
+            className={cn("h-9 w-9 shrink-0 rounded-xl object-contain p-0.5")}
             loading="eager"
           />
           {!collapsed && (
