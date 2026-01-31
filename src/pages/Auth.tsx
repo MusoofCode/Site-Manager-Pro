@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { HardHat, Mail, Lock, Eye, EyeOff } from "lucide-react";
-import logo from "@/assets/logo.png";
+import logoLight from "@/assets/logo-light.png";
+import logoDark from "@/assets/logo-dark.png";
 import { useTheme } from "next-themes";
 import * as z from "zod";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -282,9 +283,9 @@ const Auth = () => {
         <div className="bg-card border border-border rounded-2xl p-8 shadow-lg">
           <div className="flex flex-col items-center mb-8">
             <img
-              src={logo}
+              src={isDark ? logoDark : logoLight}
               alt="SOMPROPERTY"
-              className={"h-20 w-20 mb-4 " + (isDark ? "" : "invert saturate-0")}
+              className="h-20 w-20 mb-4"
             />
             <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
               <HardHat className="text-primary" />

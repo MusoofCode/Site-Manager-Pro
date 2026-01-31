@@ -214,9 +214,7 @@ export function AppHeader({ onLogout }: { onLogout: () => void }) {
             {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </Button>
 
-          <Button type="button" variant="default" onClick={onLogout} className="hidden sm:inline-flex">
-            Logout
-          </Button>
+          {/* Logout is available in the Session status dropdown */}
         </div>
       </div>
     </header>
