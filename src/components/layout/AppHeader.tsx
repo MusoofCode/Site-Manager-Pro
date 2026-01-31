@@ -14,6 +14,14 @@ import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { NotificationCenter } from "@/components/notifications/NotificationCenter";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 function routeLabel(pathname: string) {
   const map: Record<string, string> = {
@@ -150,15 +158,52 @@ export function AppHeader({ onLogout }: { onLogout: () => void }) {
           </div>
 
           {sessionEmail && (
-            <div className="hidden lg:flex items-center gap-2 rounded-full border border-border bg-background/60 px-3 py-2">
-              <User className="h-4 w-4 text-muted-foreground" />
-              <span className="max-w-[220px] truncate text-xs font-medium text-foreground">{sessionEmail}</span>
-              <span className="text-muted-foreground">•</span>
-              <span className="inline-flex items-center gap-1 text-xs font-medium text-foreground">
-                <ShieldCheck className="h-3.5 w-3.5 text-muted-foreground" />
-                {isAdmin ? "Admin" : "User"}
-              </span>
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="hidden lg:inline-flex bg-background/60"
+                  title="Session status"
+                >
+                  <User className="h-4 w-4" />
+                  <span className="max-w-[200px] truncate">{sessionEmail}</span>
+                  <span className="text-muted-foreground">•</span>
+                  <span className="inline-flex items-center gap-1">
+                    <ShieldCheck className="h-4 w-4" />
+                    {isAdmin ? "Admin" : "User"}
+                  </span>
+                </Button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent align="end" className="z-50 w-72 bg-popover">
+                <DropdownMenuLabel className="flex items-center gap-2">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background">
+                    <User className="h-4 w-4 text-foreground" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-foreground">
+                      {isAdmin ? "Admin" : "User"}
+                    </p>
+                    <p className="truncate text-xs text-muted-foreground">{sessionEmail}</p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem disabled className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">Role</span>
+                  <span className="text-xs font-medium text-foreground">{isAdmin ? "admin" : "user"}</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem disabled className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">Status</span>
+                  <span className="text-xs font-medium text-foreground">Signed in</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={onLogout} className="font-medium">
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
           <NotificationCenter />
 
