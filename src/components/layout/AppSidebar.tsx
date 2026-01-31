@@ -17,7 +17,8 @@ import {
 } from "lucide-react";
 
 import { NavLink } from "@/components/NavLink";
-import logo from "@/assets/logo.png";
+import logoLight from "@/assets/logo-light.png";
+import logoDark from "@/assets/logo-dark.png";
 import {
   Sidebar,
   SidebarContent,
@@ -94,13 +95,9 @@ export function AppSidebar({ onLogout }: { onLogout: () => void }) {
       <SidebarHeader className="gap-3 p-3">
         <div className="flex items-center gap-3 px-1">
           <img
-            src={logo}
+            src={isDark ? logoDark : logoLight}
             alt="SOMPROPERTY"
-            className={cn(
-              "h-9 w-9 shrink-0 rounded-xl",
-              // white in dark mode, black in light mode
-              isDark ? "" : "invert saturate-0",
-            )}
+            className={cn("h-9 w-9 shrink-0 rounded-xl")}
             loading="eager"
           />
           {!collapsed && (
