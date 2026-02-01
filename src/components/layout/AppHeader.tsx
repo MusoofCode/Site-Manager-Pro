@@ -1,15 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { useTheme } from "next-themes";
-import { Clock, Moon, Sun, ShieldCheck, User } from "lucide-react";
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Clock, ShieldCheck, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { NotificationCenter } from "@/components/notifications/NotificationCenter";
@@ -43,7 +34,6 @@ function routeLabel(pathname: string) {
 export function AppHeader({ onLogout }: { onLogout: () => void }) {
   const location = useLocation();
   const [now, setNow] = useState(() => new Date());
-  const { theme, resolvedTheme, setTheme } = useTheme();
   const [sessionUserId, setSessionUserId] = useState<string | null | undefined>(undefined);
   const [sessionEmail, setSessionEmail] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
@@ -96,10 +86,6 @@ export function AppHeader({ onLogout }: { onLogout: () => void }) {
     };
   }, [sessionUserId]);
 
-  const themeMode = (theme ?? "system") as "dark" | "light" | "system";
-  const effectiveTheme = (resolvedTheme ?? "dark") as "dark" | "light";
-  const isDark = effectiveTheme === "dark";
-
   const dateTimeLabel = useMemo(() => {
     const date = new Intl.DateTimeFormat(undefined, {
       weekday: "short",
@@ -142,19 +128,6 @@ export function AppHeader({ onLogout }: { onLogout: () => void }) {
               </span>
               <span className="text-muted-foreground"> • {dateTimeLabel.date}</span>
             </div>
-          </div>
-
-          <div className="hidden md:block">
-            <Select value={themeMode} onValueChange={(v) => setTheme(v)}>
-              <SelectTrigger className="w-[160px] bg-background/60">
-                <SelectValue placeholder="Theme" />
-              </SelectTrigger>
-              <SelectContent className="z-50 bg-popover">
-                <SelectItem value="system">System</SelectItem>
-                <SelectItem value="dark">Dark</SelectItem>
-                <SelectItem value="light">Light</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
 
           {sessionEmail && (
@@ -204,15 +177,6 @@ export function AppHeader({ onLogout }: { onLogout: () => void }) {
             </DropdownMenu>
           )}
           <NotificationCenter />
-
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setTheme(isDark ? "light" : "dark")}
-            title={isDark ? "Switch to light mode" : "Switch to dark mode"}
-          >
-            {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          </Button>
 
           {/* Logout is available in the Session status dropdown */}
         </div>

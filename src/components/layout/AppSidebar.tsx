@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 import type React from "react";
 import { useLocation } from "react-router-dom";
-import { useTheme } from "next-themes";
 import {
   ClipboardCheck,
   CreditCard,
@@ -17,7 +16,6 @@ import {
 } from "lucide-react";
 
 import { NavLink } from "@/components/NavLink";
-import logoLight from "@/assets/logo-light.png";
 import logoDark from "@/assets/logo-dark.png";
 import {
   Sidebar,
@@ -46,8 +44,6 @@ export function AppSidebar({ onLogout }: { onLogout: () => void }) {
   const location = useLocation();
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
-  const { resolvedTheme } = useTheme();
-  const isDark = (resolvedTheme ?? "dark") === "dark";
 
   const groups = useMemo(
     () =>
@@ -95,7 +91,7 @@ export function AppSidebar({ onLogout }: { onLogout: () => void }) {
       <SidebarHeader className="gap-3 p-3">
         <div className="flex items-center gap-3 px-1">
           <img
-            src={isDark ? logoDark : logoLight}
+            src={logoDark}
             alt="SOMPROPERTY"
             className={cn("h-9 w-9 shrink-0 rounded-xl object-contain p-0.5")}
             loading="eager"
