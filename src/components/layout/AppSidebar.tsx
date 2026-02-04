@@ -87,7 +87,7 @@ export function AppSidebar({ onLogout }: { onLogout: () => void }) {
         // breathing room like the reference
         "m-2",
         // make the floating sidebar feel more "oval" like the reference
-        "[&_[data-sidebar=sidebar]]:rounded-[2rem]",
+        "[&_[data-sidebar=sidebar]]:rounded-[2.75rem] [&_[data-sidebar=sidebar]]:overflow-hidden",
       )}
     >
       <SidebarHeader className="gap-3 p-3">
