@@ -7,8 +7,10 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { HardHat, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import logoDark from "@/assets/logo-dark.png";
+import authHero from "@/assets/auth-hero.png";
 import * as z from "zod";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const COMMON_PASSWORDS = [
   "password",
@@ -275,135 +277,170 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-background p-4">
-      <div className="mx-auto grid min-h-[calc(100vh-2rem)] w-full max-w-5xl items-center gap-6 lg:grid-cols-2">
-        <div className="hidden lg:block">
-          <div className="rounded-[2.25rem] border border-border/70 bg-gradient-hero p-10 shadow-[0_24px_80px_-56px_hsl(var(--foreground)/0.25)]">
-            <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-[0_14px_40px_-26px_hsl(var(--foreground)/0.35)]">
-                <HardHat className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-foreground">SOMPROPERTY</p>
-                <p className="text-xs text-muted-foreground">Construction OS</p>
-              </div>
-            </div>
-
-            <div className="mt-10 space-y-3">
-              <p className="text-3xl font-semibold leading-tight text-foreground">
-                Manage projects, people, materials and budgets — in one place.
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Secure admin login with activity tracking and operational dashboards.
-              </p>
-            </div>
-
-            <div className="mt-10 grid grid-cols-3 gap-3">
-              <div className="rounded-2xl border border-border/70 bg-card/60 p-4">
-                <p className="text-xs text-muted-foreground">Quick</p>
-                <p className="mt-1 text-sm font-semibold text-foreground">Dashboards</p>
-              </div>
-              <div className="rounded-2xl border border-border/70 bg-card/60 p-4">
-                <p className="text-xs text-muted-foreground">Clear</p>
-                <p className="mt-1 text-sm font-semibold text-foreground">Workflows</p>
-              </div>
-              <div className="rounded-2xl border border-border/70 bg-card/60 p-4">
-                <p className="text-xs text-muted-foreground">Safe</p>
-                <p className="mt-1 text-sm font-semibold text-foreground">Access</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="w-full">
-          <div className="rounded-[2rem] border border-border/70 bg-card/90 p-8 shadow-[0_24px_80px_-56px_hsl(var(--foreground)/0.25)] backdrop-blur">
-            <div className="flex flex-col items-center mb-8">
-              <img src={logoDark} alt="SOMPROPERTY" className="h-20 w-20 mb-4 object-contain p-1" />
-              <h1 className="text-3xl font-semibold text-foreground">Welcome</h1>
-              <p className="text-muted-foreground mt-2">Sign in to continue</p>
-            </div>
-
-          <form onSubmit={handleAuth} className="space-y-4">
-            {formError && (
-              <Alert variant="destructive">
-                <AlertTitle>{formError.title}</AlertTitle>
-                <AlertDescription>{formError.message}</AlertDescription>
-              </Alert>
-            )}
-            <div>
-              <Label htmlFor="email" className="text-foreground">Email</Label>
-              <div className="relative">
-                <Mail className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    if (formError) setFormError(null);
-                  }}
-                  required
-                  className="pl-10"
-                  placeholder="Enter the email"
-                  autoComplete="email"
+      <div className="mx-auto flex min-h-[calc(100vh-2rem)] w-full max-w-6xl items-center">
+        <div className="w-full overflow-hidden rounded-[2.75rem] border border-border/70 bg-card/90 shadow-[0_24px_80px_-56px_hsl(var(--foreground)/0.25)] backdrop-blur">
+          <div className="grid grid-cols-1 lg:grid-cols-2">
+            {/* Left: form */}
+            <div className="p-8 sm:p-12">
+              <div className="flex items-center gap-3">
+                <img
+                  src={logoDark}
+                  alt="SOMPROPERTY logo"
+                  className="h-10 w-10 rounded-xl object-contain"
                 />
+                <div>
+                  <p className="text-sm font-semibold text-foreground">SOMPROPERTY</p>
+                  <p className="text-xs text-muted-foreground">Construction OS</p>
+                </div>
               </div>
-            </div>
-            <div>
-              <Label htmlFor="password" className="text-foreground">Password</Label>
-              <div className="relative">
-                <Lock className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                    if (formError) setFormError(null);
-                  }}
-                  required
-                  className="pl-10 pr-10"
-                  placeholder="••••••••"
-                  autoComplete={isLogin ? "current-password" : "new-password"}
-                />
-                <button
+
+              <div className="mt-10">
+                <h1 className="text-4xl font-semibold tracking-tight text-foreground">Welcome Back</h1>
+                <p className="mt-2 text-sm text-muted-foreground">Let’s login to grab amazing deal</p>
+              </div>
+
+              <div className="mt-8 space-y-3">
+                <Button
                   type="button"
-                  onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  variant="outline"
+                  className="w-full justify-center bg-background"
+                  disabled
                 >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
+                  Continue with Google
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full justify-center bg-background"
+                  disabled
+                >
+                  Continue with Facebook
+                </Button>
+              </div>
+
+              <div className="my-7 flex items-center gap-4">
+                <div className="h-px flex-1 bg-border" />
+                <span className="text-xs text-muted-foreground">Or</span>
+                <div className="h-px flex-1 bg-border" />
+              </div>
+
+              <form onSubmit={handleAuth} className="space-y-4">
+                {formError && (
+                  <Alert variant="destructive">
+                    <AlertTitle>{formError.title}</AlertTitle>
+                    <AlertDescription>{formError.message}</AlertDescription>
+                  </Alert>
+                )}
+
+                <div>
+                  <Label htmlFor="email" className="text-foreground">
+                    Email
+                  </Label>
+                  <div className="relative">
+                    <Mail className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        if (formError) setFormError(null);
+                      }}
+                      required
+                      className="pl-10"
+                      placeholder="Enter the email"
+                      autoComplete="email"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="password" className="text-foreground">
+                    Password
+                  </Label>
+                  <div className="relative">
+                    <Lock className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                        if (formError) setFormError(null);
+                      }}
+                      required
+                      className="pl-10 pr-10"
+                      placeholder="••••••••"
+                      autoComplete={isLogin ? "current-password" : "new-password"}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((v) => !v)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground transition hover:text-foreground"
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between gap-4">
+                  <label className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Checkbox />
+                    Remember me
+                  </label>
+                  <button
+                    type="button"
+                    className="text-sm font-medium text-foreground underline-offset-4 hover:underline"
+                  >
+                    Forgot Password?
+                  </button>
+                </div>
+
+                <Button type="submit" disabled={loading || checkingBootstrap} className="w-full font-semibold">
+                  {checkingBootstrap
+                    ? "Checking..."
+                    : loading
+                      ? "Processing..."
+                      : isLogin
+                        ? "Login"
+                        : "Create Admin"}
+                </Button>
+              </form>
+
+              <div className="mt-6">
+                {!adminExists && !checkingBootstrap ? (
+                  <button
+                    onClick={() => setIsLogin(!isLogin)}
+                    className="w-full text-sm text-muted-foreground transition hover:text-foreground"
+                  >
+                    {isLogin ? "Don’t have an account? Sign Up" : "Have an account? Log in"}
+                  </button>
+                ) : adminExists && !checkingBootstrap ? (
+                  <p className="text-center text-sm text-muted-foreground">Admin already initialized — login only.</p>
+                ) : null}
               </div>
             </div>
-            <Button
-              type="submit"
-              disabled={loading || checkingBootstrap}
-              className="w-full font-semibold"
-            >
-              {checkingBootstrap
-                ? "Checking..."
-                : loading
-                  ? "Processing..."
-                  : isLogin
-                    ? "Login"
-                    : "Create Admin"}
-            </Button>
-          </form>
 
-          {!adminExists && !checkingBootstrap && (
-            <button
-              onClick={() => setIsLogin(!isLogin)}
-              className="w-full mt-4 text-muted-foreground hover:text-foreground transition"
-            >
-              {isLogin ? "No admin yet? Create the first admin" : "Have an account? Log in"}
-            </button>
-          )}
-
-          {adminExists && !checkingBootstrap && (
-            <p className="mt-4 text-center text-sm text-muted-foreground">
-              Admin already initialized — login only.
-            </p>
-          )}
+            {/* Right: image panel */}
+            <div className="relative hidden lg:block p-8">
+              <div className="relative h-full min-h-[640px] overflow-hidden rounded-[2.75rem] bg-gradient-hero shadow-[0_24px_80px_-56px_hsl(var(--foreground)/0.28)]">
+                <img
+                  src={authHero}
+                  alt="Abstract 3D brand illustration"
+                  className="h-full w-full object-cover"
+                  loading="lazy"
+                />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-transparent" />
+                <div className="absolute left-6 right-6 top-6">
+                  <p className="text-right text-sm font-medium text-foreground/90">
+                    Browse thousands of properties to buy, sell,
+                    <br />
+                    or rent with trusted agents.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
