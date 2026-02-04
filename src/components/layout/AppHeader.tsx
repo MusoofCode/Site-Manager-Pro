@@ -108,7 +108,7 @@ export function AppHeader({ onLogout }: { onLogout: () => void }) {
 
   return (
     <header className="sticky top-0 z-40 px-2 pt-2">
-      <div className="flex items-center justify-between rounded-2xl border border-border bg-card/70 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-card/60">
+      <div className="flex items-center justify-between rounded-2xl border border-border/70 bg-card/85 px-4 py-3 shadow-[0_12px_40px_-32px_hsl(var(--foreground)/0.18)] backdrop-blur supports-[backdrop-filter]:bg-card/70">
         <div className="flex min-w-0 items-center gap-3">
           <SidebarTrigger className="shrink-0" />
           <div className="min-w-0">

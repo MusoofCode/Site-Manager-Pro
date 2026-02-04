@@ -83,8 +83,8 @@ export function AppSidebar({ onLogout }: { onLogout: () => void }) {
       collapsible="icon"
       variant="floating"
       className={cn(
-        "border border-sidebar-border bg-sidebar",
-        // give the sidebar a little breathing room like the reference
+        "border border-sidebar-border/70 bg-sidebar shadow-construction",
+        // breathing room like the reference
         "m-2",
       )}
     >
