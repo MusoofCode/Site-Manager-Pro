@@ -62,6 +62,9 @@ All colors MUST be HSL.
     --gradient-hero: linear-gradient(135deg, hsl(var(--construction-orange) / 0.16), hsl(var(--construction-amber) / 0.14));
     --gradient-card: linear-gradient(to bottom, hsl(var(--card)), hsl(var(--background)));
     --shadow-construction: 0 18px 50px -28px hsl(222 22% 8% / 0.28);
+    
+    /* Typography: Hauvel-inspired — clean + geometric sans-serif */
+    font-family: "Inter", "Poppins", system-ui, -apple-system, sans-serif;
   }
 
   .dark {

@@ -4,13 +4,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import { HardHat, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { toast } from "sonner";
+import { HardHat, Mail, Lock, Eye, EyeOff, CheckCircle2 } from "lucide-react";
 import logoDark from "@/assets/logo-dark.png";
 import authHero from "@/assets/auth-hero.png";
 import * as z from "zod";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Checkbox } from "@/components/ui/checkbox";
 
 const COMMON_PASSWORDS = [
   "password",
@@ -72,7 +71,6 @@ const Auth = () => {
   const [checkingBootstrap, setCheckingBootstrap] = useState(true);
   const [adminExists, setAdminExists] = useState<boolean>(true);
   const navigate = useNavigate();
-  const { toast } = useToast();
 
   // If already authenticated, never keep the user on /auth.
   useEffect(() => {
@@ -148,10 +146,8 @@ const Auth = () => {
     try {
       const parsed = authSchema.safeParse({ email, password });
       if (!parsed.success) {
-        toast({
-          title: "Invalid input",
+        toast.error("Invalid input", {
           description: parsed.error.issues[0]?.message,
-          variant: "destructive",
         });
         return;
       }
@@ -198,18 +194,20 @@ const Auth = () => {
           if (bootstrapError) throw bootstrapError;
         }
 
-        toast({
-          title: "Welcome back",
+        toast.success("Welcome back!", {
           description: "Successfully logged in.",
+          icon: <CheckCircle2 className="h-5 w-5" style={{ color: '#22c55e' }} />,
+          duration: 2000,
         });
-        clearAuthGuardState(normalizedEmail);
-        navigate("/dashboard");
+        
+        setTimeout(() => {
+          clearAuthGuardState(normalizedEmail);
+          navigate("/dashboard");
+        }, 1500);
       } else {
         if (adminExists) {
-          toast({
-            title: "Signup disabled",
+          toast.error("Signup disabled", {
             description: "An admin account already exists. Please log in.",
-            variant: "destructive",
           });
           setIsLogin(true);
           return;
@@ -232,12 +230,16 @@ const Auth = () => {
         const { error: loginError } = await supabase.auth.signInWithPassword({ email, password });
         if (loginError) throw loginError;
 
-        toast({
-          title: "Admin initialized",
+        toast.success("Admin initialized!", {
           description: "Your admin account is ready.",
+          icon: <CheckCircle2 className="h-5 w-5" style={{ color: '#22c55e' }} />,
+          duration: 2000,
         });
-        clearAuthGuardState(normalizedEmail);
-        navigate("/dashboard");
+        
+        setTimeout(() => {
+          clearAuthGuardState(normalizedEmail);
+          navigate("/dashboard");
+        }, 1500);
       }
     } catch (error: any) {
       // Update local guard state for login attempts.
@@ -384,19 +386,6 @@ const Auth = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between gap-4">
-                  <label className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Checkbox />
-                    Remember me
-                  </label>
-                  <button
-                    type="button"
-                    className="text-sm font-medium text-foreground underline-offset-4 hover:underline"
-                  >
-                    Forgot Password?
-                  </button>
-                </div>
-
                 <Button type="submit" disabled={loading || checkingBootstrap} className="w-full font-semibold">
                   {checkingBootstrap
                     ? "Checking..."
@@ -433,7 +422,7 @@ const Auth = () => {
                 />
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-transparent" />
                 <div className="absolute left-6 right-6 top-6">
-                  <p className="text-right text-sm font-medium text-foreground/90">
+                  <p className="text-right text-lg font-medium leading-relaxed text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.4)]">
                     Browse thousands of properties to buy, sell,
                     <br />
                     or rent with trusted agents.
