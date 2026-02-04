@@ -6,9 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { HardHat, Mail, Lock, Eye, EyeOff } from "lucide-react";
-import logoLight from "@/assets/logo-light.png";
 import logoDark from "@/assets/logo-dark.png";
-import { useTheme } from "next-themes";
 import * as z from "zod";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
@@ -73,8 +71,6 @@ const Auth = () => {
   const [adminExists, setAdminExists] = useState<boolean>(true);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { resolvedTheme } = useTheme();
-  const isDark = (resolvedTheme ?? "dark") === "dark";
 
   // If already authenticated, never keep the user on /auth.
   useEffect(() => {
@@ -278,21 +274,53 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="bg-card border border-border rounded-2xl p-8 shadow-lg">
-          <div className="flex flex-col items-center mb-8">
-            <img
-              src={isDark ? logoDark : logoLight}
-              alt="SOMPROPERTY"
-              className="h-20 w-20 mb-4 object-contain p-1"
-            />
-            <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
-              <HardHat className="text-primary" />
-              SOMPROPERTY
-            </h1>
-            <p className="text-muted-foreground mt-2">Project Management System</p>
+    <div className="min-h-screen bg-background p-4">
+      <div className="mx-auto grid min-h-[calc(100vh-2rem)] w-full max-w-5xl items-center gap-6 lg:grid-cols-2">
+        <div className="hidden lg:block">
+          <div className="rounded-[2.25rem] border border-border/70 bg-gradient-hero p-10 shadow-[0_24px_80px_-56px_hsl(var(--foreground)/0.25)]">
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-[0_14px_40px_-26px_hsl(var(--foreground)/0.35)]">
+                <HardHat className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-foreground">SOMPROPERTY</p>
+                <p className="text-xs text-muted-foreground">Construction OS</p>
+              </div>
+            </div>
+
+            <div className="mt-10 space-y-3">
+              <p className="text-3xl font-semibold leading-tight text-foreground">
+                Manage projects, people, materials and budgets — in one place.
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Secure admin login with activity tracking and operational dashboards.
+              </p>
+            </div>
+
+            <div className="mt-10 grid grid-cols-3 gap-3">
+              <div className="rounded-2xl border border-border/70 bg-card/60 p-4">
+                <p className="text-xs text-muted-foreground">Quick</p>
+                <p className="mt-1 text-sm font-semibold text-foreground">Dashboards</p>
+              </div>
+              <div className="rounded-2xl border border-border/70 bg-card/60 p-4">
+                <p className="text-xs text-muted-foreground">Clear</p>
+                <p className="mt-1 text-sm font-semibold text-foreground">Workflows</p>
+              </div>
+              <div className="rounded-2xl border border-border/70 bg-card/60 p-4">
+                <p className="text-xs text-muted-foreground">Safe</p>
+                <p className="mt-1 text-sm font-semibold text-foreground">Access</p>
+              </div>
+            </div>
           </div>
+        </div>
+
+        <div className="w-full">
+          <div className="rounded-[2rem] border border-border/70 bg-card/90 p-8 shadow-[0_24px_80px_-56px_hsl(var(--foreground)/0.25)] backdrop-blur">
+            <div className="flex flex-col items-center mb-8">
+              <img src={logoDark} alt="SOMPROPERTY" className="h-20 w-20 mb-4 object-contain p-1" />
+              <h1 className="text-3xl font-semibold text-foreground">Welcome</h1>
+              <p className="text-muted-foreground mt-2">Sign in to continue</p>
+            </div>
 
           <form onSubmit={handleAuth} className="space-y-4">
             {formError && (
@@ -376,6 +404,7 @@ const Auth = () => {
               Admin already initialized — login only.
             </p>
           )}
+          </div>
         </div>
       </div>
     </div>

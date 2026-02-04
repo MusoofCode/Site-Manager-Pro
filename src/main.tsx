@@ -4,7 +4,8 @@ import "./index.css";
 import { ThemeProvider } from "next-themes";
 
 createRoot(document.getElementById("root")!).render(
-  <ThemeProvider attribute="class" defaultTheme="light" forcedTheme="light">
+  // Force a single theme across the app (no light-mode toggle anywhere)
+  <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark">
     <App />
   </ThemeProvider>,
 );
