@@ -196,7 +196,11 @@ const Auth = () => {
 
         toast.success("Welcome back!", {
           description: "Successfully logged in.",
-          icon: <CheckCircle2 className="h-5 w-5" style={{ color: '#22c55e' }} />,
+          icon: (
+            <span className="inline-flex origin-center motion-safe:animate-enter">
+              <CheckCircle2 className="h-5 w-5 text-primary" />
+            </span>
+          ),
           duration: 2000,
         });
         
@@ -232,7 +236,11 @@ const Auth = () => {
 
         toast.success("Admin initialized!", {
           description: "Your admin account is ready.",
-          icon: <CheckCircle2 className="h-5 w-5" style={{ color: '#22c55e' }} />,
+          icon: (
+            <span className="inline-flex origin-center motion-safe:animate-enter">
+              <CheckCircle2 className="h-5 w-5 text-primary" />
+            </span>
+          ),
           duration: 2000,
         });
         
@@ -301,30 +309,6 @@ const Auth = () => {
                 <p className="mt-2 text-sm text-muted-foreground">Let’s login to grab amazing deal</p>
               </div>
 
-              <div className="mt-8 space-y-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full justify-center bg-background"
-                  disabled
-                >
-                  Continue with Google
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full justify-center bg-background"
-                  disabled
-                >
-                  Continue with Facebook
-                </Button>
-              </div>
-
-              <div className="my-7 flex items-center gap-4">
-                <div className="h-px flex-1 bg-border" />
-                <span className="text-xs text-muted-foreground">Or</span>
-                <div className="h-px flex-1 bg-border" />
-              </div>
 
               <form onSubmit={handleAuth} className="space-y-4">
                 {formError && (
