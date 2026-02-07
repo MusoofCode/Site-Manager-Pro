@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { HardHat, Mail, Lock, Eye, EyeOff, CheckCircle2 } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, CheckCircle2 } from "lucide-react";
 import logoDark from "@/assets/logo-dark.png";
 import authHero from "@/assets/auth-hero.png";
 import * as z from "zod";
@@ -286,137 +286,176 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-4">
-      <div className="mx-auto flex min-h-[calc(100vh-2rem)] w-full max-w-6xl items-center">
-        <div className="w-full overflow-hidden rounded-[2.75rem] border border-border/70 bg-card/90 shadow-[0_24px_80px_-56px_hsl(var(--foreground)/0.25)] backdrop-blur">
-          <div className="grid grid-cols-1 lg:grid-cols-2">
-            {/* Left: form */}
-            <div className="p-8 sm:p-12">
-              <div className="flex items-center gap-3">
-                <img
-                  src={logoDark}
-                  alt="SOMPROPERTY logo"
-                  className="h-10 w-10 rounded-xl object-contain"
-                />
-                <div>
-                  <p className="text-sm font-semibold text-foreground">SOMPROPERTY</p>
-                  <p className="text-xs text-muted-foreground">Construction OS</p>
-                </div>
-              </div>
+    <div className="relative min-h-screen overflow-hidden bg-background">
+      {/* ambient background */}
+      <div aria-hidden className="pointer-events-none absolute inset-0">
+        <div className="absolute -left-24 -top-24 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
+        <div className="absolute -bottom-28 left-1/3 h-96 w-96 rounded-full bg-accent/10 blur-3xl" />
+        <div className="absolute -right-24 top-24 h-80 w-80 rounded-full bg-muted/30 blur-3xl" />
+        <div className="absolute inset-0 bg-[radial-gradient(80%_60%_at_50%_0%,hsl(var(--primary)/0.10),transparent_55%)]" />
+      </div>
 
-              <div className="mt-10">
-                <h1 className="text-4xl font-semibold tracking-tight text-foreground">Welcome Back</h1>
-                <p className="mt-2 text-sm text-muted-foreground">Let’s login to grab amazing deal</p>
-              </div>
-
-
-              <form onSubmit={handleAuth} className="space-y-4">
-                {formError && (
-                  <Alert variant="destructive">
-                    <AlertTitle>{formError.title}</AlertTitle>
-                    <AlertDescription>{formError.message}</AlertDescription>
-                  </Alert>
-                )}
-
-                <div>
-                  <Label htmlFor="email" className="text-foreground">
-                    Email
-                  </Label>
-                  <div className="relative">
-                    <Mail className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => {
-                        setEmail(e.target.value);
-                        if (formError) setFormError(null);
-                      }}
-                      required
-                      className="pl-10"
-                      placeholder="Enter the email"
-                      autoComplete="email"
+      <main className="relative p-4">
+        <div className="mx-auto flex min-h-[calc(100vh-2rem)] w-full max-w-6xl items-center">
+          <section className="w-full overflow-hidden rounded-[2.75rem] border border-border/60 bg-card/60 shadow-[0_40px_120px_-92px_hsl(var(--foreground)/0.55)] backdrop-blur-xl">
+            <div className="grid grid-cols-1 lg:grid-cols-2">
+              {/* Left: form */}
+              <div className="relative p-8 sm:p-12">
+                <div className="flex items-center gap-3">
+                  <div className="rounded-2xl border border-border/60 bg-background/60 p-2 shadow-[0_10px_40px_-28px_hsl(var(--foreground)/0.35)] backdrop-blur">
+                    <img
+                      src={logoDark}
+                      alt="SOMPROPERTY logo"
+                      className="h-8 w-8 rounded-xl object-contain"
                     />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">SOMPROPERTY</p>
+                    <p className="text-xs text-muted-foreground">Construction OS</p>
                   </div>
                 </div>
 
-                <div>
-                  <Label htmlFor="password" className="text-foreground">
-                    Password
-                  </Label>
-                  <div className="relative">
-                    <Lock className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      value={password}
-                      onChange={(e) => {
-                        setPassword(e.target.value);
-                        if (formError) setFormError(null);
-                      }}
-                      required
-                      className="pl-10 pr-10"
-                      placeholder="••••••••"
-                      autoComplete={isLogin ? "current-password" : "new-password"}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword((v) => !v)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground transition hover:text-foreground"
-                      aria-label={showPassword ? "Hide password" : "Show password"}
-                    >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
-                  </div>
-                </div>
-
-                <Button type="submit" disabled={loading || checkingBootstrap} className="w-full font-semibold">
-                  {checkingBootstrap
-                    ? "Checking..."
-                    : loading
-                      ? "Processing..."
-                      : isLogin
-                        ? "Login"
-                        : "Create Admin"}
-                </Button>
-              </form>
-
-              <div className="mt-6">
-                {!adminExists && !checkingBootstrap ? (
-                  <button
-                    onClick={() => setIsLogin(!isLogin)}
-                    className="w-full text-sm text-muted-foreground transition hover:text-foreground"
-                  >
-                    {isLogin ? "Don’t have an account? Sign Up" : "Have an account? Log in"}
-                  </button>
-                ) : adminExists && !checkingBootstrap ? (
-                  <p className="text-center text-sm text-muted-foreground">Admin already initialized — login only.</p>
-                ) : null}
-              </div>
-            </div>
-
-            {/* Right: image panel */}
-            <div className="relative hidden lg:block p-8">
-              <div className="relative h-full min-h-[640px] overflow-hidden rounded-[2.75rem] bg-gradient-hero shadow-[0_24px_80px_-56px_hsl(var(--foreground)/0.28)]">
-                <img
-                  src={authHero}
-                  alt="Abstract 3D brand illustration"
-                  className="h-full w-full object-cover"
-                  loading="lazy"
-                />
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-transparent" />
-                <div className="absolute left-6 right-6 top-6">
-                  <p className="text-right text-lg font-medium leading-relaxed text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.4)]">
-                    Browse thousands of properties to buy, sell,
-                    <br />
-                    or rent with trusted agents.
+                <div className="mt-10">
+                  <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
+                    Welcome back
+                  </h1>
+                  <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
+                    Sign in to continue to your workspace.
                   </p>
                 </div>
+
+                <form onSubmit={handleAuth} className="mt-8 space-y-4">
+                  {formError && (
+                    <Alert variant="destructive">
+                      <AlertTitle>{formError.title}</AlertTitle>
+                      <AlertDescription>{formError.message}</AlertDescription>
+                    </Alert>
+                  )}
+
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-foreground">
+                      Email
+                    </Label>
+                    <div className="relative">
+                      <Mail className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => {
+                          setEmail(e.target.value);
+                          if (formError) setFormError(null);
+                        }}
+                        required
+                        className="pl-10 bg-background/60 backdrop-blur"
+                        placeholder="Enter your email"
+                        autoComplete="email"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="password" className="text-foreground">
+                      Password
+                    </Label>
+                    <div className="relative">
+                      <Lock className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        value={password}
+                        onChange={(e) => {
+                          setPassword(e.target.value);
+                          if (formError) setFormError(null);
+                        }}
+                        required
+                        className="pl-10 pr-10 bg-background/60 backdrop-blur"
+                        placeholder="••••••••"
+                        autoComplete={isLogin ? "current-password" : "new-password"}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword((v) => !v)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-2 text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        aria-label={showPassword ? "Hide password" : "Show password"}
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <Button
+                    type="submit"
+                    disabled={loading || checkingBootstrap}
+                    className="w-full font-semibold"
+                  >
+                    {checkingBootstrap
+                      ? "Checking..."
+                      : loading
+                        ? "Processing..."
+                        : isLogin
+                          ? "Login"
+                          : "Create Admin"}
+                  </Button>
+
+                  <div className="pt-2">
+                    {!adminExists && !checkingBootstrap ? (
+                      <button
+                        onClick={() => setIsLogin(!isLogin)}
+                        className="w-full text-sm text-muted-foreground transition hover:text-foreground"
+                      >
+                        {isLogin ? "Don’t have an account? Sign Up" : "Have an account? Log in"}
+                      </button>
+                    ) : adminExists && !checkingBootstrap ? (
+                      <p className="text-center text-sm text-muted-foreground">
+                        Admin already initialized — login only.
+                      </p>
+                    ) : null}
+                  </div>
+                </form>
+              </div>
+
+              {/* Right: image panel */}
+              <div className="relative hidden lg:block p-8">
+                <div className="relative h-full min-h-[640px] overflow-hidden rounded-[2.75rem] bg-gradient-hero shadow-[0_30px_90px_-70px_hsl(var(--foreground)/0.55)]">
+                  <img
+                    src={authHero}
+                    alt="Abstract 3D brand illustration"
+                    className="h-full w-full object-cover"
+                    loading="lazy"
+                  />
+
+                  {/* glass overlays */}
+                  <div className="pointer-events-none absolute inset-0">
+                    <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-background/10 to-transparent" />
+                    <div className="absolute inset-0 bg-[radial-gradient(60%_60%_at_30%_20%,hsl(var(--primary)/0.18),transparent_60%)]" />
+                  </div>
+
+                  <div className="absolute left-6 right-6 top-6">
+                    <div className="ml-auto max-w-md rounded-2xl border border-border/40 bg-card/35 p-5 backdrop-blur-xl">
+                      <p className="text-right text-base font-medium leading-relaxed text-foreground drop-shadow-[0_2px_10px_hsl(var(--background)/0.65)]">
+                        Browse thousands of properties to buy, sell,
+                        <br />
+                        or rent with trusted agents.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="absolute bottom-6 left-6 right-6">
+                    <div className="flex items-center justify-between rounded-2xl border border-border/40 bg-card/25 px-4 py-3 backdrop-blur-xl">
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-foreground">Secure sign-in</p>
+                        <p className="text-xs text-muted-foreground">Minimal, fast, and private.</p>
+                      </div>
+                      <div className="h-9 w-9 rounded-full bg-muted/40 ring-1 ring-border/60" />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          </section>
         </div>
-      </div>
+      </main>
     </div>
   );
 };
